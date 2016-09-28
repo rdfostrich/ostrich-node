@@ -28,7 +28,7 @@ OstrichStore::~OstrichStore() { Destroy(); }
 // Destroys the document, disabling all further operations.
 void OstrichStore::Destroy() {
   if (controller) {
-    Controller::cleanup(controller);
+    //Controller::cleanup(controller);
     delete controller;
     controller = NULL;
   }
@@ -218,7 +218,8 @@ public:
       Triple triple_pattern(subject, predicate, object, dict);
 
       // Estimate the total number of triples
-      it = controller->get(triple_pattern, offset, version);
+      totalCount = controller->get_version_materialized_count_estimated(triple_pattern, 0, version);
+      it = controller->get_version_materialized(triple_pattern, 0, version);
 
       // Add matching triples to the result vector
       Triple t;
