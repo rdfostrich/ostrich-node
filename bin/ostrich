@@ -16,7 +16,7 @@ if (args._.length !== 1 || args.h || args.help) {
   process.exit(1);
 }
 
-var hdt = require('../lib/ostrich'),
+var ostrich = require('../lib/ostrich'),
     N3 = require('n3');
 
 // Prepare the query and the result writer

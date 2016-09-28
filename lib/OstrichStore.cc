@@ -6,7 +6,7 @@
 #include <HDTEnums.hpp>
 #include <HDTManager.hpp>
 #include <HDTVocabulary.hpp>
-#include <LiteralDictionary.hpp>
+//#include <LiteralDictionary.hpp>
 #include "OstrichStore.h"
 
 using namespace v8;
@@ -17,12 +17,12 @@ using namespace hdt;
 /******** Construction and destruction ********/
 
 
-// Creates a new HDT document.
+// Creates a new Ostrich store.
 OstrichStore::OstrichStore(const Local<Object>& handle, Controller* controller) : controller(controller), features(1) {
   this->Wrap(handle);
 }
 
-// Deletes the HDT document.
+// Deletes the Ostrich store.
 OstrichStore::~OstrichStore() { Destroy(); }
 
 // Destroys the document, disabling all further operations.
@@ -34,7 +34,7 @@ void OstrichStore::Destroy() {
   }
 }
 
-// Constructs a JavaScript wrapper for an HDT document.
+// Constructs a JavaScript wrapper for an Ostrich store.
 NAN_METHOD(OstrichStore::New) {
   assert(info.IsConstructCall());
   info.GetReturnValue().Set(info.This());
@@ -66,7 +66,7 @@ const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
 /******** createOstrichStore ********/
 
 class CreateWorker : public Nan::AsyncWorker {
-  string filename;
+  string path;
   Controller* controller;
 
 public:
@@ -75,91 +75,9 @@ public:
 
   void Execute() {
     try {
-      controller = new Controller(HashDB::TCOMPRESS);
-      int patch_count = 0;
-
-      DIR *dir;
-      if ((dir = opendir(patchesBasePatch.c_str())) != NULL) {
-          for (int i = startIndex; i <= endIndex; i++) {
-              string versionname = to_string(i);
-              string versionPath = patchesBasePatch + k_path_separator + versionname;
-              populate_controller_with_version(versionpatch_count_count++, versionPath);
-          }
-          closedir(dir);
-      }
+      controller = new Controller(path, HashDB::TCOMPRESS);
     }
     catch (const runtime_error error) { SetErrorMessage(error.what()); }
-  }
-
-  void populate_controller_with_version(int patch_id, string path) {
-      std::smatch base_match;
-      std::regex regex_additions("([a-z0-9]*).nt.additions.txt");
-      std::regex regex_deletions("([a-z0-9]*).nt.deletions.txt");
-
-      DictionaryManager *dict = controller->get_snapshot_manager()->get_dictionary_manager(0);
-      bool first = patch_id == 0;
-      Patch patch(dict);
-      CombinedTripleIterator* it = new CombinedTripleIterator();
-
-      if (controller->get_max_patch_id() >= patch_id) {
-          if (first) {
-              cout << "Skipped constructing snapshot because it already exists, loaded instead." << endl;
-              controller->get_snapshot_manager()->load_snapshot(patch_id);
-          } else {
-              cout << "Skipped constructing patch because it already exists, loading instead..." << endl;
-              DictionaryManager* dict_patch = controller->get_dictionary_manager(patch_id);
-              if (controller->get_patch_tree_manager()->get_patch_tree(patch_id, dict_patch)->get_max_patch_id() < patch_id) {
-                  controller->get_patch_tree_manager()->load_patch_tree(patch_id, dict_patch);
-              }
-              cout << "Loaded!" << endl;
-          }
-          return;
-      }
-
-      DIR *dir;
-      struct dirent *ent;
-      StopWatch st;
-      cout << "Loading patch... " << endl;
-      if ((dir = opendir(path.c_str())) != NULL) {
-          while ((ent = readdir(dir)) != NULL) {
-              string filename = string(ent->d_name);
-              string full_path = path + k_path_separator + filename;
-              if (filename != "." && filename != "..") {
-                  int count = 0;
-                  bool additions = std::regex_match(filename, base_match, regex_additions);
-                  bool deletions = std::regex_match(filename, base_match, regex_deletions);
-                  cout << "\nFILE: " << full_path << endl; // TODO
-                  if (first && additions) {
-                      it->appendIterator(get_from_file(full_path));
-                  } else if(!first && (additions || deletions)) {
-                      IteratorTripleString *subIt = get_from_file(full_path);
-                      while (subIt->hasNext()) {
-                          TripleString* tripleString = subIt->next();
-                          patch.add(PatchElement(Triple(tripleString->getSubject(), tripleString->getPredicate(), tripleString->getObject(), dict), additions));
-                          count++;
-                      }
-                  }
-              }
-          }
-          closedir(dir);
-      }
-      long long duration = st.stopReal() / 1000;
-
-      long long added;
-      if (first) {
-          //std::cout.setstate(std::ios_base::failbit); // Disable cout info from HDT
-          HDT* hdt = controller->get_snapshot_manager()->create_snapshot(0, it, BASEURI);
-          //std::cout.clear();
-          added = hdt->getTriples()->getNumberOfElements();
-          delete it;
-      } else {
-          added = patch.get_size();
-          controller->append(patch, patch_id, dict);
-      }
-      cout << "  Added: " << added << endl;
-      cout << "  Duration: " << duration << endl;
-      long long rate = added / duration;
-      cout << "  Rate: " << rate << " triples / ms" << endl;
   }
 
   void HandleOKCallback() {
@@ -175,7 +93,7 @@ public:
 };
 
 // Creates a new instance of OstrichStore.
-// JavaScript signature: createOstrichStore(filename, callback)
+// JavaScript signature: createOstrichStore(path, callback)
 NAN_METHOD(OstrichStore::Create) {
   assert(info.Length() == 2);
   Nan::AsyncQueueWorker(new CreateWorker(*Nan::Utf8String(info[0]),
@@ -211,35 +129,35 @@ public:
   void Execute() {
     TripleIterator* it = NULL;
     try {
-      Controller* controller = store->getController();
+      Controller* controller = store->GetController();
 
       // Prepare the triple pattern
       DictionaryManager *dict = controller->get_snapshot_manager()->get_dictionary_manager(0);
       Triple triple_pattern(subject, predicate, object, dict);
 
       // Estimate the total number of triples
-      totalCount = controller->get_version_materialized_count_estimated(triple_pattern, 0, version);
-      it = controller->get_version_materialized(triple_pattern, 0, version);
+      totalCount = controller->get_version_materialized_count_estimated(triple_pattern, version);
+      it = controller->get_version_materialized(triple_pattern, offset, version);
+      //TODO: determine exact at runtime
+      hasExactCount = false;
 
       // Add matching triples to the result vector
       Triple t;
       long count = 0;
-      //TODO: Add count estimation once implemented
-      while(it->next(&t)) {
-        if ((limit == -2 || limit-- > 0)) {
+
+      while(it->next(&t) && (!limit || triples.size() < limit)) {
           triples.push_back(t);
 
-          if (!subjects.count(triple.getSubject())) {
-            subjects[triple.getSubject()] = dict->idToString(triple.getSubject(), SUBJECT);
+          if (!subjects.count(t.get_subject())) {
+            subjects[t.get_subject()] = dict->idToString(t.get_subject(), SUBJECT);
           }
-          if (!predicates.count(triple.getPredicate())) {
-            predicates[triple.getPredicate()] = dict->idToString(triple.getPredicate(), PREDICATE);
+          if (!predicates.count(t.get_predicate())) {
+            predicates[t.get_predicate()] = dict->idToString(t.get_predicate(), PREDICATE);
           }
-          if (!objects.count(triple.getObject())) {
-            string object(dict->idToString(triple.getObject(), OBJECT));
-            objects[triple.getObject()] = fromHdtLiteral(object);
+          if (!objects.count(t.get_object())) {
+            string object(dict->idToString(t.get_object(), OBJECT));
+            objects[t.get_object()] = fromHdtLiteral(object);
           }
-        }
         count++;
       };
 
@@ -269,9 +187,9 @@ public:
     const Local<String> OBJECT    = Nan::New("object").ToLocalChecked();
     for (vector<Triple>::const_iterator it = triples.begin(); it != triples.end(); it++) {
       Local<Object> tripleObject = Nan::New<Object>();
-      tripleObject->Set(SUBJECT, subjectStrings[it->getSubject()]);
-      tripleObject->Set(PREDICATE, predicateStrings[it->getPredicate()]);
-      tripleObject->Set(OBJECT, objectStrings[it->getObject()]);
+      tripleObject->Set(SUBJECT, subjectStrings[it->get_subject()]);
+      tripleObject->Set(PREDICATE, predicateStrings[it->get_predicate()]);
+      tripleObject->Set(OBJECT, objectStrings[it->get_object()]);
       triplesArray->Set(count++, tripleObject);
     }
 
@@ -298,7 +216,7 @@ NAN_METHOD(OstrichStore::SearchTriples) {
     *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), *Nan::Utf8String(info[2]),
     info[3]->Uint32Value(), info[4]->Uint32Value(), info[5]->Uint32Value(),
     new Nan::Callback(info[6].As<Function>()),
-    info[6]->IsObject() ? info[7].As<Object>() : info.This()));
+    info[7]->IsObject() ? info[7].As<Object>() : info.This()));
 }
 
 
@@ -308,8 +226,8 @@ NAN_METHOD(OstrichStore::SearchTriples) {
 
 // Gets a bitvector indicating the supported features.
 NAN_PROPERTY_GETTER(OstrichStore::Features) {
-  OstrichStore* OstrichStore = Unwrap<OstrichStore>(info.This());
-  info.GetReturnValue().Set(Nan::New<Integer>(OstrichStore->features));
+  OstrichStore* ostrichStore = Unwrap<OstrichStore>(info.This());
+  info.GetReturnValue().Set(Nan::New<Integer>(ostrichStore->features));
 }
 
 
@@ -320,8 +238,8 @@ NAN_PROPERTY_GETTER(OstrichStore::Features) {
 // JavaScript signature: OstrichStore#close([callback], [self])
 NAN_METHOD(OstrichStore::Close) {
   // Destroy the current store
-  OstrichStore* OstrichStore = Unwrap<OstrichStore>(info.This());
-  OstrichStore->Destroy();
+  OstrichStore* ostrichStore = Unwrap<OstrichStore>(info.This());
+  ostrichStore->Destroy();
 
   // Call the callback if one was passed
   if (info.Length() >= 1 && info[0]->IsFunction()) {
@@ -341,8 +259,8 @@ NAN_METHOD(OstrichStore::Close) {
 
 // Gets a boolean indicating whether the document is closed.
 NAN_PROPERTY_GETTER(OstrichStore::Closed) {
-  OstrichStore* OstrichStore = Unwrap<OstrichStore>(info.This());
-  info.GetReturnValue().Set(Nan::New<Boolean>(!OstrichStore->controller));
+  OstrichStore* ostrichStore = Unwrap<OstrichStore>(info.This());
+  info.GetReturnValue().Set(Nan::New<Boolean>(!ostrichStore->controller));
 }
 
 

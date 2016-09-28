@@ -1,15 +1,14 @@
 {
   "targets": [
     {
-      "target_name": "hdt",
+      "target_name": "ostrich",
       "sources": [
         "lib/ostrich.cc",
-        "lib/OstrichDocument.cc",
+        "lib/OstrichStore.cc",
         "<!@(ls -1 deps/ostrich/src/main/cpp/controller/*.cc)",
         "<!@(ls -1 deps/ostrich/src/main/cpp/patch/*.cc)",
         "<!@(ls -1 deps/ostrich/src/main/cpp/dictionary/*.cc)",
         "<!@(ls -1 deps/ostrich/src/main/cpp/snapshot/*.cc)",
-        "<!@(ls -1 deps/ostrich/src/main/cpp/*.cc)",
         "<!@(ls -1 deps/ostrich/deps/hdt/hdt-lib/src/bitsequence/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/hdt-lib/src/dictionary/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/hdt-lib/src/hdt/*.cpp)",
@@ -32,7 +31,8 @@
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
         "deps/ostrich/deps/hdt/hdt-lib/include",
-        "deps/ostrich/deps/hdt/hdt-lib/src/dictionary/",
+        "deps/ostrich/deps/hdt/hdt-lib/src",
+        "deps/ostrich/deps/hdt/hdt-lib/src/dictionary",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/bitsequence",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/coders",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/mapper",
