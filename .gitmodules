@@ -1,3 +1,6 @@
 [submodule "deps/ostrich"]
 	path = deps/ostrich
 	url = ssh://git@git.datasciencelab.ugent.be:4444/linked-data-fragments/Patch-Store.git
+[submodule "deps/kyotocabinet"]
+	path = deps/kyotocabinet
+	url = https://github.com/kazupon/kyotocabinet
