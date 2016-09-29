@@ -24,6 +24,7 @@
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/coders/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/mapper/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence/*.cpp)",
+        "<!@(ls -1 deps/kyotocabinet/*.cc)",
       ],
       "sources!": [
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence/*S.cpp)",
@@ -39,6 +40,7 @@
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/permutation",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/utils",
+        "deps/kyotocabinet",
       ],
       "defines": [
         "HAVE_CDS",
