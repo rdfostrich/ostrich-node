@@ -1,6 +1,11 @@
 {
   "targets": [
     {
+      "variables": {
+        "kyotocabinet_shared_library_dir": "<!(echo $KYOTO_SHARED_LIBRARY)",
+        "kyotocabinet_shared_include_dir": "<!(echo $KYOTO_INCLUDE_DIR)",
+        'boost_io_streams_library_dir': '<!(echo $BOOST_INCLUDE_DIR)',
+      },
       "target_name": "ostrich",
       "sources": [
         "lib/ostrich.cc",
@@ -24,10 +29,13 @@
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/coders/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/mapper/*.cpp)",
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence/*.cpp)",
-        "<!@(ls -1 deps/kyotocabinet/*.cc)",
       ],
       "sources!": [
         "<!@(ls -1 deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence/*S.cpp)",
+      ],
+      "libraries": [
+        "<(kyotocabinet_shared_library_dir)/libkyotocabinet.a",
+        "<(boost_io_streams_library_dir)/libboost_iostreams.a",
       ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
@@ -40,19 +48,19 @@
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/permutation",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/static/sequence",
         "deps/ostrich/deps/hdt/libcds-v1.0.12/src/utils",
-        "deps/kyotocabinet",
+        "<(kyotocabinet_shared_include_dir)",
       ],
       "defines": [
         "HAVE_CDS",
       ],
-      "cflags!":    [ "-fno-rtti", "-fno-exceptions" ],
+      "cflags!":    [ "-fno-rtti", "-fno-exceptions", "-std=c++11", "-stdlib=libc++" ],
       "cflags_cc!": [ "-fno-rtti", "-fno-exceptions" ],
       "xcode_settings": {
         "GCC_ENABLE_CPP_RTTI": "YES",
         "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-            'OTHER_CFLAGS': [ '-O3', '-march=native', '-w' ],
-            'OTHER_CPLUSPLUSFLAGS' : ['-Wno-c++11-narrowing', '-std=c++11', '-stdlib=libc++'],
-            'OTHER_LDFLAGS': ['-stdlib=libc++'],
+            "OTHER_CFLAGS": [ "-O3", "-march=native", "-w" ],
+            "OTHER_CPLUSPLUSFLAGS" : ["-Wno-c++11-narrowing", "-std=c++11", "-stdlib=libc++"],
+            "OTHER_LDFLAGS": ["-stdlib=libc++"],
       },
     },
   ],

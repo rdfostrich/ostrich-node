@@ -93,9 +93,9 @@ describe('ostrich', function () {
         document.features.countTriples.should.be.true;
       });
 
-      it('should not support searchLiterals', function () {
+      /* it('should not support searchLiterals', function () {
         document.features.searchLiterals.should.be.false;
-      });
+      });*/
     });
 
     describe('being searched', function () {

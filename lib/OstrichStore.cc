@@ -131,6 +131,9 @@ public:
     try {
       Controller* controller = store->GetController();
 
+      // Check version
+      version = version > 0 ? version : controller->get_max_patch_id();
+
       // Prepare the triple pattern
       DictionaryManager *dict = controller->get_snapshot_manager()->get_dictionary_manager(0);
       Triple triple_pattern(subject, predicate, object, dict);
