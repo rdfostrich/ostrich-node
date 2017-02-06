@@ -29,9 +29,11 @@
   "scripts": {
     "test": "rm test/*.hdt.index 2> /dev/null; mocha",
     "lint": "eslint lib/*.js test/*.js bin/*",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "install": "cmake-js compile"
   },
   "dependencies": {
+    "cmake-js": "^3.4.0",
     "minimist": "^1.1.0",
     "n3": "^0.7.0",
     "nan": "^2.4.0"

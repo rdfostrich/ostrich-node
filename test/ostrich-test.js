@@ -16,19 +16,7 @@ describe('ostrich', function () {
         ostrich.fromPath(null, function (error) {
           this.should.equal(self);
           error.should.be.an.Error;
-          error.message.should.equal('Invalid filename: null');
-          done();
-        }, self);
-      });
-    });
-
-    describe('with a non-existing file as argument', function () {
-      it('should throw an error', function (done) {
-        var self = {};
-        ostrich.fromPath('abc', function (error) {
-          this.should.equal(self);
-          error.should.be.an.Error;
-          error.message.should.equal('Could not open ostrich file "abc"');
+          error.message.should.equal('Invalid path: null');
           done();
         }, self);
       });
