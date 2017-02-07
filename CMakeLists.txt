@@ -14,8 +14,10 @@ project(ostrich)
 # Include cmake-js requirements
 include_directories(${CMAKE_JS_INC})
 
-# Add HDT
+# Add directories
 include_directories(
+        lib/
+        deps/ostrich/src/main/cpp/
         deps/hdt/libcds-v1.0.12/includes/
         deps/ostrich/deps/hdt/hdt-lib/include/
         deps/ostrich/deps/hdt/hdt-lib/src/
@@ -23,10 +25,10 @@ include_directories(
 
 # Add source files
 file(GLOB_RECURSE SOURCE_FILES
-        "lib/ostrich.cc",
+        "lib/ostrich.cc"
         "lib/OstrichStore.cc"
         "deps/ostrich/src/main/cpp/*.h"
-        "deps/ostrich/src/main/cpp*.cpp"
+        "deps/ostrich/src/main/cpp/*.cc"
         "deps/ostrich/deps/hdt/hdt-lib/src/*.h"
         "deps/ostrich/deps/hdt/hdt-lib/src/*.cpp"
 )
