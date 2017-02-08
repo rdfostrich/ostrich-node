@@ -134,8 +134,8 @@ describe('ostrich', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(9);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+                                  predicate: 'a',
+                                  object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -183,7 +183,7 @@ describe('ostrich', function () {
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'c' });
+                                  object:    'd' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -303,16 +303,16 @@ describe('ostrich', function () {
                                   object:    'c' });
           triples[2].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'b' });
+                                  object:    'd' });
           triples[3].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'd' });
+                                  object:    'f' });
           triples[4].should.eql({ subject:   'a',
                                   predicate: 'a',
                                   object:    '"z"^^http://example.org/literal' });
           triples[5].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'f' });
+                                  object:    'g' });
         });
 
         it('should estimate the total count as 6', function () {
@@ -332,21 +332,25 @@ describe('ostrich', function () {
         });
 
         it('should return an array with matches', function () {
+          console.log(triples); // TODO
           triples.should.be.an.Array;
-          triples.should.have.lengthOf(3);
+          triples.should.have.lengthOf(4);
           triples[0].should.eql({ subject:   'a',
                                   predicate: 'b',
                                   object:    'c' });
           triples[1].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'b' });
+                                  object:    'd' });
           triples[2].should.eql({ subject:   'a',
                                   predicate: 'b',
-                                  object:    'd' });
+                                  object:    'f' });
+          triples[3].should.eql({ subject:   'a',
+                                  predicate: 'b',
+                                  object:    'g' });
         });
 
-        it('should estimate the total count as 3', function () {
-          totalCount.should.equal(3);
+        it('should estimate the total count as 4', function () {
+          totalCount.should.equal(4);
         });
 
         it('should be an exact count', function () {
