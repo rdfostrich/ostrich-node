@@ -3,6 +3,9 @@ node_js:
  - "4"
  - "6"
  - "node"
+script:
+  - npm run lint
+  - npm test
 env:
   - CXX=g++-4.8
 addons:
@@ -11,6 +14,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-script:
-  - npm run lint
-  - npm test
+cache:
+  directories:
+    - node_modules

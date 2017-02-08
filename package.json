@@ -33,6 +33,7 @@
     "install": "cmake-js compile"
   },
   "dependencies": {
+    "boost-lib": "^0.11.3",
     "cmake-js": "^3.4.0",
     "minimist": "^1.1.0",
     "n3": "^0.9.1",

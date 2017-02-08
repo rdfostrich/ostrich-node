@@ -8,6 +8,10 @@ HunterGate(
     SHA1 "0ccc3f3fd571676a1804723984598f9f90a4d6bc"
 )
 
+# Include BoostLib module
+SET(CMAKE_MODULE_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/boost-lib/cmake")
+include(BoostLib)
+
 # Set project
 project(ostrich)
 
@@ -37,6 +41,11 @@ file(GLOB_RECURSE SOURCE_FILES
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+
+# Add boost libs
+require_boost_libs(1.58.0 iostreams;regex)
+include_directories(${Boost_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
 # Add Kyoto Cabinet
 find_library(KYOTO_SHARED_LIBRARY kyotocabinet PATHS ${KC_ROOT}/lib)
@@ -71,17 +80,6 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} Threads::Threads)
-
-# Add zlib
-hunter_add_package(ZLIB)
-find_package(ZLIB CONFIG REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
-
-# Add Boost
-hunter_add_package(Boost COMPONENTS iostreams regex)
-find_package(Boost CONFIG REQUIRED COMPONENTS iostreams regex)
-target_link_libraries(${PROJECT_NAME} Boost::iostreams Boost::regex)
 
 if(NOT MSVC)
     set(PThreadLib -pthread)

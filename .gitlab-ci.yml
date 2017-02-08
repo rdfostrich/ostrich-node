@@ -1,0 +1,26 @@
+image: node:latest
+variables:
+# Use clang compiler
+  CC: "clang"
+  CXX: "clang++"
+before_script:
+# Init submodules
+  - git submodule sync --recursive
+  - git submodule update --init --recursive
+# Install clang compiler
+  - apt-get update
+  - apt-get install -y clang
+# Install CMake
+  - curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | tar -xzC /opt
+  - export PATH="/opt/cmake-3.5.2-Linux-x86_64/bin/:$PATH"
+# Install Kyoto Cabinet
+  - ./install-kc-ci.sh
+# Install module dependencies
+  - npm install --unsafe-perm
+cache:
+  paths:
+  - node_modules/
+test_all:
+  script:
+   - npm test
+   - npm run lint
