@@ -133,7 +133,7 @@ public:
       Controller* controller = store->GetController();
 
       // Check version
-      version = version >= 0 ? version : controller->get_max_patch_id();
+      version = version >= 0 ? version : controller->get_max_patch_id() - 1;
 
       // Prepare the triple pattern
       dict = controller->get_dictionary_manager(version);
