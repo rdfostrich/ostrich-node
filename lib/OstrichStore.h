@@ -35,7 +35,9 @@ class OstrichStore : public node::ObjectWrap {
   // OstrichStore#_searchTriplesVersionMaterialized(subject, predicate, object, offset, limit, version, callback, self)
   static NAN_METHOD(SearchTriplesVersionMaterialized);
   // OstrichStore#_searchTriplesDeltaMaterialized(subject, predicate, object, offset, limit, version_start, version_end, callback, self)
-    static NAN_METHOD(SearchTriplesDeltaMaterialized);
+  static NAN_METHOD(SearchTriplesDeltaMaterialized);
+  // OstrichStore#_searchTriplesVersion(subject, predicate, object, offset, limit, callback, self)
+  static NAN_METHOD(SearchTriplesVersion);
   // OstrichStore#_features
   static NAN_PROPERTY_GETTER(Features);
   // OstrichStore#close([callback], [self])
