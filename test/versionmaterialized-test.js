@@ -24,8 +24,8 @@ describe('version materialization', function () {
         document.features.searchTriplesVersionMaterialized.should.be.true;
       });
 
-      it('should support countTriples', function () {
-        document.features.countTriples.should.be.true;
+      it('should support countTriplesVersionMaterialized', function () {
+        document.features.countTriplesVersionMaterialized.should.be.true;
       });
 
       /* it('should not support searchLiterals', function () {
@@ -1026,7 +1026,7 @@ describe('version materialization', function () {
     describe('being counted', function () {
       describe('without self value', function () {
         it('should invoke the callback with the ostrich document as `this`', function (done) {
-          document.countTriples('a', 'b', 'c', function (error) {
+          document.countTriplesVersionMaterialized('a', 'b', 'c', function (error) {
             this.should.equal(document);
             done(error);
           });
@@ -1036,7 +1036,7 @@ describe('version materialization', function () {
       describe('with a self value', function () {
         var self = {};
         it('should invoke the callback with that value as `this`', function (done) {
-          document.countTriples('a', 'b', 'c', function (error) {
+          document.countTriplesVersionMaterialized('a', 'b', 'c', function (error) {
             this.should.equal(self);
             done(error);
           }, self);
@@ -1046,7 +1046,7 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('q', null, null,
+          document.countTriplesVersionMaterialized('q', null, null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1062,7 +1062,7 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('q', null, null, 0,
+          document.countTriplesVersionMaterialized('q', null, null, 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1078,7 +1078,7 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('q', null, null, 1,
+          document.countTriplesVersionMaterialized('q', null, null, 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1094,7 +1094,7 @@ describe('version materialization', function () {
       describe('with pattern null null null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, null,
+          document.countTriplesVersionMaterialized(null, null, null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1110,7 +1110,7 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, null, 0,
+          document.countTriplesVersionMaterialized(null, null, null, 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1126,7 +1126,7 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, null, 1,
+          document.countTriplesVersionMaterialized(null, null, null, 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1142,7 +1142,7 @@ describe('version materialization', function () {
       describe('with pattern a null null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('a', null, null,
+          document.countTriplesVersionMaterialized('a', null, null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1158,7 +1158,7 @@ describe('version materialization', function () {
       describe('with pattern a null null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('a', null, null, 0,
+          document.countTriplesVersionMaterialized('a', null, null, 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1174,7 +1174,7 @@ describe('version materialization', function () {
       describe('with pattern a null null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples('a', null, null, 1,
+          document.countTriplesVersionMaterialized('a', null, null, 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1190,7 +1190,7 @@ describe('version materialization', function () {
       describe('with pattern null b null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'b', null,
+          document.countTriplesVersionMaterialized(null, 'b', null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1206,7 +1206,7 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'b', null, 0,
+          document.countTriplesVersionMaterialized(null, 'b', null, 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1222,7 +1222,7 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'b', null, 1,
+          document.countTriplesVersionMaterialized(null, 'b', null, 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1238,7 +1238,7 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'http://example.org/p3', null,
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1254,7 +1254,7 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'http://example.org/p3', null, 0,
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1270,7 +1270,7 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, 'http://example.org/p3', null, 1,
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1286,7 +1286,7 @@ describe('version materialization', function () {
       describe('with pattern null null f at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, 'f',
+          document.countTriplesVersionMaterialized(null, null, 'f',
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1302,7 +1302,7 @@ describe('version materialization', function () {
       describe('with pattern null null f at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, 'f', 0,
+          document.countTriplesVersionMaterialized(null, null, 'f', 0,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1318,7 +1318,7 @@ describe('version materialization', function () {
       describe('with pattern null null f at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, 'f', 1,
+          document.countTriplesVersionMaterialized(null, null, 'f', 1,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1334,7 +1334,7 @@ describe('version materialization', function () {
       describe('with pattern null null "a"^^http://example.org/literal', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriples(null, null, '"a"^^http://example.org/literal',
+          document.countTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal',
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 

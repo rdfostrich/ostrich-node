@@ -31,8 +31,10 @@ include_directories(
 file(GLOB_RECURSE SOURCE_FILES
         "lib/ostrich.cc"
         "lib/OstrichStore.cc"
-        "deps/ostrich/src/main/cpp/*.h"
-        "deps/ostrich/src/main/cpp/*.cc"
+        "deps/ostrich/src/main/cpp/*/*.h"
+        "deps/ostrich/src/main/cpp/*/*.cc"
+        "deps/ostrich/src/main/cpp/simpleprogresslistener.h"
+        "deps/ostrich/src/main/cpp/simpleprogresslistener.cc"
         "deps/ostrich/deps/hdt/hdt-lib/src/*.h"
         "deps/ostrich/deps/hdt/hdt-lib/src/*.cpp"
 )

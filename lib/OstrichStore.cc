@@ -51,6 +51,7 @@ const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
     // Create prototype
     Nan::SetPrototypeMethod(constructorTemplate, "_searchTriplesVersionMaterialized",  SearchTriplesVersionMaterialized);
+    Nan::SetPrototypeMethod(constructorTemplate, "_searchTriplesDeltaMaterialized",    SearchTriplesDeltaMaterialized);
     Nan::SetPrototypeMethod(constructorTemplate, "close",                              Close);
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
                      Nan::New("_features").ToLocalChecked(), Features);
@@ -201,6 +202,107 @@ NAN_METHOD(OstrichStore::SearchTriplesVersionMaterialized) {
     info[3]->Uint32Value(), info[4]->Uint32Value(), info[5]->Uint32Value(),
     new Nan::Callback(info[6].As<Function>()),
     info[7]->IsObject() ? info[7].As<Object>() : info.This()));
+}
+
+/******** OstrichStore#_searchTriplesDeltaMaterialized ********/
+class SearchTriplesDeltaMaterializedWorker : public Nan::AsyncWorker {
+  OstrichStore* store;
+  // JavaScript function arguments
+  string subject, predicate, object;
+  uint32_t offset, limit;
+  Persistent<Object> self;
+  // Callback return values
+  vector<TripleDelta*> triples;
+  int version_start, version_end;
+  uint32_t totalCount;
+  bool hasExactCount;
+  DictionaryManager* dict;
+
+public:
+  SearchTriplesDeltaMaterializedWorker(OstrichStore* store, char* subject, char* predicate, char* object,
+                      uint32_t offset, uint32_t limit, int32_t version_start, int32_t version_end, Nan::Callback* callback, Local<Object> self)
+    : Nan::AsyncWorker(callback),
+      store(store), subject(subject), predicate(predicate), object(object),
+      offset(offset), limit(limit), version_start(version_start), version_end(version_end), totalCount(0) {
+    SaveToPersistent("self", self);
+  };
+
+  void Execute() {
+    TripleDeltaIterator* it = NULL;
+    try {
+      Controller* controller = store->GetController();
+
+      // Check version
+      version_end = version_end >= 0 ? version_end : controller->get_max_patch_id() - 1;
+
+      // Prepare the triple pattern
+      dict = controller->get_dictionary_manager(version_start);
+      Triple triple_pattern(subject, predicate, toHdtLiteral(object), dict);
+
+      // Estimate the total number of triples
+      std::pair<size_t, ResultEstimationType> count_data = controller->get_delta_materialized_count(triple_pattern, version_start, version_end);
+      totalCount = count_data.first;
+      it = controller->get_delta_materialized(triple_pattern, offset, version_start, version_end);
+      hasExactCount = count_data.second == EXACT;
+
+      // Add matching triples to the result vector
+      TripleDelta t;
+      long count = 0;
+      while(it->next(&t) && (!limit || triples.size() < limit)) {
+          triples.push_back(new TripleDelta(new Triple(*t.get_triple()), t.is_addition()));
+          count++;
+      };
+    }
+    catch (const runtime_error error) { SetErrorMessage(error.what()); }
+    if (it)
+      delete it;
+  }
+
+  void HandleOKCallback() {
+    Nan::HandleScope scope;
+
+    // Convert the triples into a JavaScript object array
+    uint32_t count = 0;
+    Local<Array> triplesArray = Nan::New<Array>(triples.size());
+    const Local<String> SUBJECT   = Nan::New("subject").ToLocalChecked();
+    const Local<String> PREDICATE = Nan::New("predicate").ToLocalChecked();
+    const Local<String> OBJECT    = Nan::New("object").ToLocalChecked();
+    const Local<String> ADDITION  = Nan::New("addition").ToLocalChecked();
+    for (vector<TripleDelta*>::iterator it = triples.begin(); it != triples.end(); it++) {
+      Local<Object> tripleObject = Nan::New<Object>();
+      tripleObject->Set(SUBJECT, Nan::New((*it)->get_triple()->get_subject(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(PREDICATE, Nan::New((*it)->get_triple()->get_predicate(*dict).c_str()).ToLocalChecked());
+      string object = (*it)->get_triple()->get_object(*dict);
+      tripleObject->Set(OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
+      tripleObject->Set(ADDITION, Nan::New((*it)->is_addition()));
+      triplesArray->Set(count++, tripleObject);
+      delete *it;
+    }
+
+    // Send the JavaScript array and estimated total count through the callback
+    const unsigned argc = 4;
+    Local<Value> argv[argc] = { Nan::Null(), triplesArray,
+                                Nan::New<Integer>((uint32_t)totalCount),
+                                Nan::New<Boolean>((bool)hasExactCount) };
+    callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+  }
+
+  void HandleErrorCallback() {
+    Nan::HandleScope scope;
+    Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
+    callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+  }
+};
+
+// Searches for a triple pattern in the document.
+// JavaScript signature: OstrichStore#_searchTriplesDeltaMaterialized(subject, predicate, object, offset, limit, version, callback)
+NAN_METHOD(OstrichStore::SearchTriplesDeltaMaterialized) {
+  assert(info.Length() == 8);
+  Nan::AsyncQueueWorker(new SearchTriplesDeltaMaterializedWorker(Unwrap<OstrichStore>(info.This()),
+    *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), *Nan::Utf8String(info[2]),
+    info[3]->Uint32Value(), info[4]->Uint32Value(), info[5]->Uint32Value(), info[6]->Uint32Value(),
+    new Nan::Callback(info[7].As<Function>()),
+    info[8]->IsObject() ? info[8].As<Object>() : info.This()));
 }
 
 
