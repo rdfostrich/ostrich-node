@@ -2,6 +2,41 @@ require('should');
 
 var ostrich = require('../lib/ostrich');
 
+/*
+0:
+ <a> <a> "a"^^<http://example.org/literal> .
+ <a> <a> "b"^^<http://example.org/literal> .
+ <a> <b> <a> .
+ <a> <b> <c> .
+ <a> <b> <d> .
+ <a> <b> <f> .
+ <a> <b> <z> .
+ <c> <c> <c> .
+
+1:
+ <a> <a> "a"^^<http://example.org/literal> .
+ <a> <b> <c> .
+ <a> <b> <d> .
+ <a> <b> <f> .
+ <c> <c> <c> .
+ <a> <a> "z"^^<http://example.org/literal> .
+ <a> <b> <g> .
+ <f> <f> <f> .
+ <z> <z> <z> .
+
+2:
+ <a> <a> "a"^^<http://example.org/literal> .
+ <a> <b> <c> .
+ <a> <b> <d> .
+ <a> <b> <f> .
+ <c> <c> <c> .
+ <a> <b> <g> .
+ <f> <r> <s> .
+ <q> <q> <q> .
+ <r> <r> <r> .
+ <z> <z> <z> .
+ */
+
 describe('version materialization', function () {
   describe('An ostrich store for an example ostrich path', function () {
     var document;
@@ -113,14 +148,14 @@ describe('version materialization', function () {
 
         it('should return an array with matches', function () {
           triples.should.be.an.Array;
-          triples.should.have.lengthOf(9);
+          triples.should.have.lengthOf(10);
           triples[0].should.eql({ subject:   'a',
             predicate: 'a',
             object:    '"a"^^http://example.org/literal' });
         });
 
-        it('should estimate the total count as 9', function () {
-          totalCount.should.equal(9);
+        it('should estimate the total count as 10', function () {
+          totalCount.should.equal(10);
         });
 
         it('should be an exact count', function () {
@@ -191,8 +226,8 @@ describe('version materialization', function () {
             object:    '"a"^^http://example.org/literal' });
         });
 
-        it('should estimate the total count as 9', function () {
-          totalCount.should.equal(9);
+        it('should estimate the total count as 10', function () {
+          totalCount.should.equal(10);
         });
 
         it('should be an exact count', function () {
@@ -263,8 +298,8 @@ describe('version materialization', function () {
             object:    'd' });
         });
 
-        it('should estimate the total count as 9', function () {
-          totalCount.should.equal(9);
+        it('should estimate the total count as 10', function () {
+          totalCount.should.equal(10);
         });
 
         it('should be an exact count', function () {
@@ -332,8 +367,8 @@ describe('version materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 9', function () {
-          totalCount.should.equal(9);
+        it('should estimate the total count as 10', function () {
+          totalCount.should.equal(10);
         });
 
         it('should be an exact count', function () {
@@ -394,8 +429,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'f',
-            predicate: 'f',
-            object:    'f' });
+            predicate: 'r',
+            object:    's' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -596,7 +631,7 @@ describe('version materialization', function () {
 
         it('should return an array with matches', function () {
           triples.should.be.an.Array;
-          triples.should.have.lengthOf(6);
+          triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
             predicate: 'a',
             object:    '"a"^^http://example.org/literal' });
@@ -610,15 +645,12 @@ describe('version materialization', function () {
             predicate: 'b',
             object:    'f' });
           triples[4].should.eql({ subject:   'a',
-            predicate: 'a',
-            object:    '"z"^^http://example.org/literal' });
-          triples[5].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'g' });
         });
 
-        it('should estimate the total count as 6', function () {
-          totalCount.should.equal(6);
+        it('should estimate the total count as 5', function () {
+          totalCount.should.equal(5);
         });
 
         it('should be an exact count', function () {
@@ -953,17 +985,14 @@ describe('version materialization', function () {
 
         it('should return an array with matches', function () {
           triples.should.be.an.Array;
-          triples.should.have.lengthOf(2);
+          triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'f' });
-          triples[1].should.eql({ subject:   'f',
-            predicate: 'f',
-            object:    'f' });
         });
 
-        it('should estimate the total count as 2', function () {
-          totalCount.should.equal(2);
+        it('should estimate the total count as 1', function () {
+          totalCount.should.equal(1);
         });
 
         it('should be an exact count', function () {
@@ -1046,7 +1075,7 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('q', null, null,
+          document.countTriplesVersionMaterialized('1', null, null,
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
@@ -1098,8 +1127,8 @@ describe('version materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 9', function () {
-          totalCount.should.equal(9);
+        it('should return 10', function () {
+          totalCount.should.equal(10);
         });
 
         it('should be an exact count', function () {
@@ -1146,8 +1175,8 @@ describe('version materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 6', function () {
-          totalCount.should.equal(6);
+        it('should return 5', function () {
+          totalCount.should.equal(5);
         });
 
         it('should be an exact count', function () {
@@ -1290,8 +1319,8 @@ describe('version materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 2', function () {
-          totalCount.should.equal(2);
+        it('should return 1', function () {
+          totalCount.should.equal(1);
         });
 
         it('should be an exact count', function () {
