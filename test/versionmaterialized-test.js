@@ -29,8 +29,8 @@ describe('version materialization', function () {
       });
 
       /* it('should not support searchLiterals', function () {
-        document.features.searchLiterals.should.be.false;
-      });*/
+       document.features.searchLiterals.should.be.false;
+       });*/
     });
 
     describe('being searched', function () {
@@ -115,8 +115,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(9);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -139,8 +139,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(8);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 8', function () {
@@ -163,8 +163,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(9);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -187,8 +187,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -211,8 +211,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 8', function () {
@@ -235,8 +235,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -259,8 +259,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -283,8 +283,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'a' });
+            predicate: 'b',
+            object:    'a' });
         });
 
         it('should estimate the total count as 8', function () {
@@ -307,8 +307,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
         });
 
         it('should estimate the total count as 9', function () {
@@ -387,15 +387,15 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('f', null, null,
-                          function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return an array with matches', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'f',
-                                  predicate: 'f',
-                                  object:    'f' });
+            predicate: 'f',
+            object:    'f' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -439,8 +439,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'f',
-                                  predicate: 'f',
-                                  object:    'f' });
+            predicate: 'f',
+            object:    'f' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -463,8 +463,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'c',
-                                  predicate: 'c',
-                                  object:    'c' });
+            predicate: 'c',
+            object:    'c' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -487,8 +487,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'c',
-                                  predicate: 'c',
-                                  object:    'c' });
+            predicate: 'c',
+            object:    'c' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -511,8 +511,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'c',
-                                  predicate: 'c',
-                                  object:    'c' });
+            predicate: 'c',
+            object:    'c' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -598,23 +598,23 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(6);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[4].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"z"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"z"^^http://example.org/literal' });
           triples[5].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'g' });
+            predicate: 'b',
+            object:    'g' });
         });
 
         it('should estimate the total count as 6', function () {
@@ -637,26 +637,26 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(7);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"b"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"b"^^http://example.org/literal' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'a' });
+            predicate: 'b',
+            object:    'a' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[4].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[5].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[6].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'z' });
+            predicate: 'b',
+            object:    'z' });
         });
 
         it('should estimate the total count as 7', function () {
@@ -679,23 +679,23 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(6);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[4].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"z"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"z"^^http://example.org/literal' });
           triples[5].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'g' });
+            predicate: 'b',
+            object:    'g' });
         });
 
         it('should estimate the total count as 6', function () {
@@ -718,17 +718,17 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(4);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'g' });
+            predicate: 'b',
+            object:    'g' });
         });
 
         it('should estimate the total count as 4', function () {
@@ -751,20 +751,20 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'a' });
+            predicate: 'b',
+            object:    'a' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[4].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'z' });
+            predicate: 'b',
+            object:    'z' });
         });
 
         it('should estimate the total count as 5', function () {
@@ -787,17 +787,17 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(4);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'c' });
+            predicate: 'b',
+            object:    'c' });
           triples[1].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'd' });
+            predicate: 'b',
+            object:    'd' });
           triples[2].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[3].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'g' });
+            predicate: 'b',
+            object:    'g' });
         });
 
         it('should estimate the total count as 4', function () {
@@ -883,8 +883,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -907,8 +907,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -931,8 +931,8 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(1);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'a',
-                                  object:    '"a"^^http://example.org/literal' });
+            predicate: 'a',
+            object:    '"a"^^http://example.org/literal' });
         });
 
         it('should estimate the total count as 1', function () {
@@ -955,11 +955,11 @@ describe('version materialization', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(2);
           triples[0].should.eql({ subject:   'a',
-                                  predicate: 'b',
-                                  object:    'f' });
+            predicate: 'b',
+            object:    'f' });
           triples[1].should.eql({ subject:   'f',
-                                  predicate: 'f',
-                                  object:    'f' });
+            predicate: 'f',
+            object:    'f' });
         });
 
         it('should estimate the total count as 2', function () {
@@ -1047,7 +1047,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples('q', null, null,
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 0', function () {
@@ -1095,7 +1095,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples(null, null, null,
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 9', function () {
@@ -1143,7 +1143,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples('a', null, null,
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 6', function () {
@@ -1191,7 +1191,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples(null, 'b', null,
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 4', function () {
@@ -1239,7 +1239,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples(null, 'http://example.org/p3', null,
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 0', function () {
@@ -1287,7 +1287,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples(null, null, 'f',
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 2', function () {
@@ -1335,7 +1335,7 @@ describe('version materialization', function () {
         var totalCount, hasExactCount;
         before(function (done) {
           document.countTriples(null, null, '"a"^^http://example.org/literal',
-                                function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
         it('should return 1', function () {
