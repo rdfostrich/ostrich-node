@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-include("deps/ostrich/ext/hunter/HunterGate.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/ext/hunter/HunterGate.cmake")
 HunterGate(
     URL "https://github.com/ruslo/hunter/archive/v0.12.40.tar.gz"
     SHA1 "0ccc3f3fd571676a1804723984598f9f90a4d6bc"
@@ -20,23 +20,23 @@ include_directories(${CMAKE_JS_INC})
 
 # Add directories
 include_directories(
-        lib/
-        deps/ostrich/src/main/cpp/
-        deps/hdt/libcds-v1.0.12/includes/
-        deps/ostrich/deps/hdt/hdt-lib/include/
-        deps/ostrich/deps/hdt/hdt-lib/src/
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/hdt/libcds-v1.0.12/includes/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/
 )
 
 # Add source files
 file(GLOB_RECURSE SOURCE_FILES
-        "lib/ostrich.cc"
-        "lib/OstrichStore.cc"
-        "deps/ostrich/src/main/cpp/*/*.h"
-        "deps/ostrich/src/main/cpp/*/*.cc"
-        "deps/ostrich/src/main/cpp/simpleprogresslistener.h"
-        "deps/ostrich/src/main/cpp/simpleprogresslistener.cc"
-        "deps/ostrich/deps/hdt/hdt-lib/src/*.h"
-        "deps/ostrich/deps/hdt/hdt-lib/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/lib/ostrich.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/lib/OstrichStore.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/*/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/*/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/simpleprogresslistener.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/simpleprogresslistener.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/*.cpp"
 )
 
 # Set cmake-js binary
