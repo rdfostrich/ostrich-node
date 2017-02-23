@@ -32,6 +32,7 @@
     "test": "rm test/*.hdt.index 2> /dev/null; mocha",
     "lint": "eslint lib/*.js test/*.js bin/*",
     "validate": "npm ls",
+    "preinstall" : "git submodule update --init --recursive",
     "install": "cmake-js compile"
   },
   "dependencies": {
