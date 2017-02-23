@@ -133,7 +133,30 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
     });
 });
 ```
- 
+
+## Standalone utility
+The standalone utility `ostrich` allows you to query OSTRICH dataset from the command line.
+<br>
+To install system-wide, execute:
+```bash
+sudo npm install -g ostrich-bindings
+```
+
+Specify queries as follows:
+```
+ostrich dataset.ostrich --queryversionmaterialized '?s ?p ?o' --offset 200 --limit 100 --version 1 --format turtle
+ostrich dataset.ostrich --querydeltamaterialized '?s ?p ?o' --offset 200 --limit 100 --versionStart 0 --versionEnd 2 --format turtle
+ostrich dataset.ostrich --queryversion '?s ?p ?o' --offset 200 --limit 100 --format turtle
+```
+Replace any of the query variables by an [IRI or literal](https://github.com/RubenVerborgh/N3.js#triple-representation) to match specific patterns.
+
+Or with less verbose parameters:
+```
+ostrich dataset.ostrich --qvm '?s ?p ?o' -o 200 -l 100 -v 1 -f turtle
+ostrich dataset.ostrich --qdm '?s ?p ?o' -o 200 -l 100 --vs 0 -ve 2 -f turtle
+ostrich dataset.ostrich --qv '?s ?p ?o' -o 200 -l 100 -f turtle
+```
+
 ## Build manually
 To build the module from source, follow these instructions:
 ```Shell
