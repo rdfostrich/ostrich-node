@@ -55,6 +55,8 @@ const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
     Nan::SetPrototypeMethod(constructorTemplate, "_searchTriplesVersion",              SearchTriplesVersion);
     Nan::SetPrototypeMethod(constructorTemplate, "close",                              Close);
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
+                         Nan::New("maxVersion").ToLocalChecked(), MaxVersion);
+    Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
                      Nan::New("_features").ToLocalChecked(), Features);
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
                      Nan::New("closed").ToLocalChecked(), Closed);
@@ -413,6 +415,14 @@ NAN_METHOD(OstrichStore::SearchTriplesVersion) {
 }
 
 
+/******** OstrichStore#maxVersion ********/
+
+
+// The max version that is available in the dataset
+NAN_PROPERTY_GETTER(OstrichStore::MaxVersion) {
+  OstrichStore* ostrichStore = Unwrap<OstrichStore>(info.This());
+  info.GetReturnValue().Set(Nan::New<Integer>(ostrichStore->GetController()->get_max_patch_id()));
+}
 
 /******** OstrichStore#features ********/
 

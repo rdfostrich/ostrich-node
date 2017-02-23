@@ -54,5 +54,17 @@ describe('ostrich', function () {
         }, self);
       });
     });
+
+    describe('with a self value', function () {
+      it('should invoke the callback with that value as `this`', function (done) {
+        var self = {};
+        ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
+          var maxVersion = ostrichStore.maxVersion;
+          maxVersion.should.equal(2);
+          ostrichStore.close();
+          done(error);
+        }, self);
+      });
+    });
   });
 });
