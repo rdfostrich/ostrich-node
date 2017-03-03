@@ -465,8 +465,8 @@ describe('version', function () {
           totalCount.should.equal(0);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -620,8 +620,8 @@ describe('version', function () {
           totalCount.should.equal(0);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 

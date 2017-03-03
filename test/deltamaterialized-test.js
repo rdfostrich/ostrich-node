@@ -214,12 +214,12 @@ describe('delta materialization', function () {
             addition:  true });
         });
 
-        it('should estimate the total count as 5', function () {
-          totalCount.should.equal(5);
+        it('should estimate the total count as 15', function () {
+          totalCount.should.equal(15);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -349,12 +349,12 @@ describe('delta materialization', function () {
             addition:  true });
         });
 
-        it('should estimate the total count as 5', function () {
-          totalCount.should.equal(5);
+        it('should estimate the total count as 15', function () {
+          totalCount.should.equal(15);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -464,12 +464,12 @@ describe('delta materialization', function () {
             addition:  true });
         });
 
-        it('should estimate the total count as 5', function () {
-          totalCount.should.equal(5);
+        it('should estimate the total count as 15', function () {
+          totalCount.should.equal(15);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -547,12 +547,12 @@ describe('delta materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 5', function () {
-          totalCount.should.equal(5);
+        it('should estimate the total count as 15', function () {
+          totalCount.should.equal(15);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -626,8 +626,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(2);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -693,12 +693,12 @@ describe('delta materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 0', function () {
-          totalCount.should.equal(0);
+        it('should estimate the total count as 2', function () {
+          totalCount.should.equal(2);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -760,12 +760,12 @@ describe('delta materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 1', function () {
-          totalCount.should.equal(0);
+        it('should estimate the total count as 2', function () {
+          totalCount.should.equal(2);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -847,12 +847,12 @@ describe('delta materialization', function () {
             addition:  false });
         });
 
-        it('should estimate the total count as 1', function () {
-          totalCount.should.equal(1);
+        it('should estimate the total count as 9', function () {
+          totalCount.should.equal(9);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -938,12 +938,12 @@ describe('delta materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 0', function () {
-          totalCount.should.equal(0);
+        it('should estimate the total count as 6', function () {
+          totalCount.should.equal(6);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1017,8 +1017,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(0);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1080,12 +1080,12 @@ describe('delta materialization', function () {
           triples.should.be.empty;
         });
 
-        it('should estimate the total count as 0', function () {
-          totalCount.should.equal(0);
+        it('should estimate the total count as 2', function () {
+          totalCount.should.equal(2);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1159,8 +1159,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(1);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1233,8 +1233,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(0);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1277,12 +1277,12 @@ describe('delta materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 5', function () {
-          totalCount.should.equal(5);
+        it('should return 15', function () {
+          totalCount.should.equal(15);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1325,12 +1325,12 @@ describe('delta materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 1', function () {
-          totalCount.should.equal(1);
+        it('should return 9', function () {
+          totalCount.should.equal(9);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1373,12 +1373,12 @@ describe('delta materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 0', function () {
-          totalCount.should.equal(0);
+        it('should return 6', function () {
+          totalCount.should.equal(6);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1425,8 +1425,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(0);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1473,8 +1473,8 @@ describe('delta materialization', function () {
           totalCount.should.equal(1);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 
@@ -1517,12 +1517,12 @@ describe('delta materialization', function () {
             function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
         });
 
-        it('should return 0', function () {
-          totalCount.should.equal(0);
+        it('should return 2', function () {
+          totalCount.should.equal(2);
         });
 
-        it('should be an exact count', function () {
-          hasExactCount.should.equal(true);
+        it('should not be an exact count', function () {
+          hasExactCount.should.equal(false);
         });
       });
 

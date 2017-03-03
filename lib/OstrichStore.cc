@@ -144,7 +144,7 @@ public:
       Triple triple_pattern(subject, predicate, toHdtLiteral(object), dict);
 
       // Estimate the total number of triples
-      std::pair<size_t, ResultEstimationType> count_data = controller->get_version_materialized_count(triple_pattern, version);
+      std::pair<size_t, ResultEstimationType> count_data = controller->get_version_materialized_count(triple_pattern, version, true);
       totalCount = count_data.first;
       it = controller->get_version_materialized(triple_pattern, offset, version);
       hasExactCount = count_data.second == EXACT;
@@ -243,7 +243,7 @@ public:
       Triple triple_pattern(subject, predicate, toHdtLiteral(object), dict);
 
       // Estimate the total number of triples
-      std::pair<size_t, ResultEstimationType> count_data = controller->get_delta_materialized_count(triple_pattern, version_start, version_end);
+      std::pair<size_t, ResultEstimationType> count_data = controller->get_delta_materialized_count(triple_pattern, version_start, version_end, true);
       totalCount = count_data.first;
       it = controller->get_delta_materialized(triple_pattern, offset, version_start, version_end);
       hasExactCount = count_data.second == EXACT;
@@ -341,7 +341,7 @@ public:
       Triple triple_pattern(subject, predicate, toHdtLiteral(object), dict);
 
       // Estimate the total number of triples
-      std::pair<size_t, ResultEstimationType> count_data = controller->get_version_count(triple_pattern);
+      std::pair<size_t, ResultEstimationType> count_data = controller->get_version_count(triple_pattern, true);
       totalCount = count_data.first;
       it = controller->get_version(triple_pattern, offset);
       hasExactCount = count_data.second == EXACT;
