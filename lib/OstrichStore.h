@@ -13,7 +13,7 @@ enum OstrichStoreFeatures {
 
 class OstrichStore : public node::ObjectWrap {
  public:
-  OstrichStore(const v8::Local<v8::Object>& handle, Controller* controller);
+  OstrichStore(string path, const v8::Local<v8::Object>& handle, Controller* controller);
 
   // createOstrichStore(path, callback)
   static NAN_METHOD(Create);
@@ -26,10 +26,11 @@ class OstrichStore : public node::ObjectWrap {
  private:
   Controller* controller;
   int features;
+  string path;
 
   // Construction and destruction
   ~OstrichStore();
-  void Destroy();
+  void Destroy(bool remove);
   static NAN_METHOD(New);
 
   // OstrichStore#_searchTriplesVersionMaterialized(subject, predicate, object, offset, limit, version, callback, self)
@@ -40,9 +41,11 @@ class OstrichStore : public node::ObjectWrap {
   static NAN_METHOD(SearchTriplesVersion);
   // OstrichStore#maxVersion
   static NAN_PROPERTY_GETTER(MaxVersion);
+  // OstrichStore#_append(version, triples, callback, self)
+  static NAN_METHOD(Append);
   // OstrichStore#_features
   static NAN_PROPERTY_GETTER(Features);
-  // OstrichStore#close([callback], [self])
+  // OstrichStore#close([remove], [callback], [self])
   static NAN_METHOD(Close);
   // OstrichStore#closed
   static NAN_PROPERTY_GETTER(Closed);
