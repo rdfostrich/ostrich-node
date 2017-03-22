@@ -424,7 +424,7 @@ NAN_METHOD(OstrichStore::SearchTriplesVersion) {
 
 class AppendWorker : public Nan::AsyncWorker {
   OstrichStore* store;
-  uint32_t version;
+  int version;
   PatchElementIteratorVector* it_patch = NULL;
   IteratorTripleStringVector* it_snapshot = NULL;
   std::vector<PatchElement>* elements_patch;
@@ -434,17 +434,16 @@ class AppendWorker : public Nan::AsyncWorker {
   uint32_t insertedCount = 0;
 
 public:
-  AppendWorker(OstrichStore* store, uint32_t version, Local<Array> triples,
+  AppendWorker(OstrichStore* store, int version, Local<Array> triples,
                Nan::Callback* callback, Local<Object> self)
-    : Nan::AsyncWorker(callback),
-      store(store), version(version) {
+    : Nan::AsyncWorker(callback), store(store) {
     SaveToPersistent("self", self);
 // For lower memory usage, we would have to use the (streaming) patch builder.
     try {
           Controller* controller = store->GetController();
 
           // Check version
-          version = version >= 0 ? version : controller->get_max_patch_id();
+          this->version = version >= 0 ? version : controller->get_max_patch_id() + 1;
 
           const Local<String> SUBJECT   = Nan::New("subject").ToLocalChecked();
           const Local<String> PREDICATE = Nan::New("predicate").ToLocalChecked();
@@ -494,7 +493,6 @@ public:
       if (it_patch) {
         controller->append(it_patch, version, dict, false); // For debugging, add: new StdoutProgressListener()
       } else if (it_snapshot) {
-        // TODO: add option to load an existing snapshot
         std::cout.setstate(std::ios_base::failbit); // Disable cout info from HDT
         HDT* hdt = controller->get_snapshot_manager()->create_snapshot(version, it_snapshot, "<http://example.org>");
         std::cout.clear();
