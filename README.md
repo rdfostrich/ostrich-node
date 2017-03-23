@@ -52,7 +52,7 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
     function (error, triples, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
       triples.forEach(function (triple) { console.log(triple); });
-      hdtDocument.close();
+      ostrichStore.close();
     });
 });
 ```
@@ -66,7 +66,7 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
   ostrichStore.countTriplesVersionMaterialized('http://example.org/s1', null, null, 1,
     function (error, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
-      hdtDocument.close();
+      ostrichStore.close();
     });
 });
 ```
@@ -85,7 +85,7 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
     function (error, triples, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
       triples.forEach(function (triple) { console.log((triple.addition ? '+ ' : '- ') + triple); });
-      hdtDocument.close();
+      ostrichStore.close();
     });
 });
 ```
@@ -99,7 +99,7 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
   ostrichStore.countTriplesDeltaMaterialized('http://example.org/s1', null, null, 0, 2,
     function (error, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
-      hdtDocument.close();
+      ostrichStore.close();
     });
 });
 ```
@@ -115,7 +115,7 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
     function (error, triples, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
       triples.forEach(function (triple) { console.log(triple + ' ' + triple.versions); });
-      hdtDocument.close();
+      ostrichStore.close();
     });
 });
 ```
@@ -129,7 +129,20 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
   ostrichStore.countTriplesVersion('http://example.org/s1', null, null,
     function (error, totalCount) {
       console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
-      hdtDocument.close();
+      ostrichStore.close();
+    });
+});
+```
+
+### Appending a new version
+Inserts a new version into the store, with the given optional version id and an array of triples.
+
+```JavaScript
+ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
+  ostrichStore.append(0, [{ subject: 'a', predicate: 'b', object: 'c' }, { subject: 'a', predicate: 'b', object: 'd' }],
+    function (error, insertedCount) {
+      console.log('Inserted ' + insertedCount + ' triples in version ' + ostrichStore.store.maxVersion);
+      ostrichStore.close();
     });
 });
 ```
