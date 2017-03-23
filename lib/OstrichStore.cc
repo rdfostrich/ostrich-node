@@ -57,7 +57,7 @@ const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
     Nan::SetPrototypeMethod(constructorTemplate, "_searchTriplesDeltaMaterialized",    SearchTriplesDeltaMaterialized);
     Nan::SetPrototypeMethod(constructorTemplate, "_searchTriplesVersion",              SearchTriplesVersion);
     Nan::SetPrototypeMethod(constructorTemplate, "_append",                            Append);
-    Nan::SetPrototypeMethod(constructorTemplate, "close",                              Close);
+    Nan::SetPrototypeMethod(constructorTemplate, "_close",                             Close);
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
                          Nan::New("maxVersion").ToLocalChecked(), MaxVersion);
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
@@ -559,7 +559,7 @@ NAN_PROPERTY_GETTER(OstrichStore::Features) {
 /******** OstrichStore#close ********/
 
 // Closes the document, disabling all further operations.
-// JavaScript signature: OstrichStore#close([remove] [callback], [self])
+// JavaScript signature: OstrichStore#_close([remove] [callback], [self])
 NAN_METHOD(OstrichStore::Close) {
   int argcOffset = 0;
   bool remove = false;

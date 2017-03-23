@@ -45,7 +45,7 @@ class OstrichStore : public node::ObjectWrap {
   static NAN_METHOD(Append);
   // OstrichStore#_features
   static NAN_PROPERTY_GETTER(Features);
-  // OstrichStore#close([remove], [callback], [self])
+  // OstrichStore#_close([remove], [callback], [self])
   static NAN_METHOD(Close);
   // OstrichStore#closed
   static NAN_PROPERTY_GETTER(Closed);
