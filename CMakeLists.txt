@@ -9,11 +9,26 @@ HunterGate(
 )
 
 # Include BoostLib module
-file(GLOB_RECURSE boostlib_cmake_path "${CMAKE_CURRENT_SOURCE_DIR}/node_modules" "BoostLib.cmake")
-list(GET boostlib_cmake_path 0 boostlib_cmake_path)
-get_filename_component(boostlib_cmake_path "${boostlib_cmake_path}" DIRECTORY)
-SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${boostlib_cmake_path}")
+set(NODE_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/node_modules")
+if(NOT IS_DIRECTORY "${NODE_MODULES_DIR}")
+    get_filename_component(PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
+    get_filename_component(PARENT_DIR_NAME "${PARENT_DIR}" NAME)
+    if(PARENT_DIR_NAME STREQUAL "node_modules")
+        set(NODE_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    endif()
+endif()
+if(NOT EXISTS "${NODE_MODULES_DIR}/boost-lib/cmake/BoostLib.cmake")
+    message(FATAL_ERROR "Couldn't find boost-lib cmake file")
+endif()
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${NODE_MODULES_DIR}/boost-lib/cmake")
 include(BoostLib)
+
+
+#file(GLOB_RECURSE boostlib_cmake_path "${CMAKE_CURRENT_SOURCE_DIR}/node_modules" "BoostLib.cmake")
+#list(GET boostlib_cmake_path 0 boostlib_cmake_path)
+#get_filename_component(boostlib_cmake_path "${boostlib_cmake_path}" DIRECTORY)
+#SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${boostlib_cmake_path}")
+#include(BoostLib)
 
 # Set project
 project(ostrich)
