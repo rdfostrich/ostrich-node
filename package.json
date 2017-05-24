@@ -1,5 +1,5 @@
 {
-  "name": "ostrich",
+  "name": "ostrich-bindings",
   "version": "0.0.1",
   "description": "Native bindings to access OSTRICH RDF triple archive.",
   "author": "Miel Vander Sande <miel.vandersande@ugent.be>, Ruben Taelman <ruben.taelman@ugent.be>",
