@@ -185,3 +185,9 @@ If you make changes to the source, do the following to rebuild:
 ```bash
 npm install && npm test
 ```
+
+## License
+This software is written by [Ruben Taelman](http://rubensworks.net/) and Miel Vander Sande.
+
+This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
+and released under the [MIT license](http://opensource.org/licenses/MIT).
