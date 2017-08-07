@@ -28,6 +28,12 @@
   "engines": {
     "node": ">=0.10.0"
   },
+  "files": [
+    "bin",
+    "deps",
+    "CMakeLists.txt",
+    "lib"
+  ],
   "scripts": {
     "test": "rm test/*.hdt.index 2> /dev/null; mocha",
     "lint": "eslint lib/*.js test/*.js bin/*",
