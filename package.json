@@ -1,8 +1,8 @@
 {
-  "name": "ostrich-bindings",
+  "name": "ostrich",
   "version": "0.0.1",
   "description": "Native bindings to access OSTRICH RDF triple archive.",
-  "author": "Ruben Taelman <ruben.taelman@ugent.be>, Miel Vander Sande <miel.vandersande@ugent.be>",
+  "author": "Miel Vander Sande <miel.vandersande@ugent.be>, Ruben Taelman <ruben.taelman@ugent.be>",
   "keywords": [
     "turtle",
     "rdf",
@@ -13,7 +13,7 @@
     "linkeddata",
     "semanticweb"
   ],
-  "license": "MIT",
+  "license": "LGPL-3.0",
   "main": "./lib/ostrich",
   "bin": {
     "ostrich": "./bin/ostrich"
