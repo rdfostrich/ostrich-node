@@ -1,6 +1,6 @@
 # Ostrich for Node.js
 
-[OSTRICH](https://git.datasciencelab.ugent.be/linked-data-fragments/Patch-Store) is a triple store with versioning support.
+[OSTRICH](github.com/rdfostrich/ostrich/) is a triple store with versioning support.
 
 This `ostrich-bindings` package for Node.js provides C++ bindings to enable querying support from JavaScript.
 
@@ -185,3 +185,9 @@ If you make changes to the source, do the following to rebuild:
 ```bash
 npm install && npm test
 ```
+
+## License
+This software is written by [Ruben Taelman](http://rubensworks.net/) and Miel Vander Sande.
+
+This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
+and released under the [MIT license](http://opensource.org/licenses/MIT).
