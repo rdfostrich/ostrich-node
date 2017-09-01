@@ -2,18 +2,31 @@ language: node_js
 node_js:
  - "4"
  - "6"
+ - "8"
  - "node"
 script:
   - npm run lint
   - npm test
 env:
-  - CXX=g++-4.8
+  - CXX=clang++
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
+      - clang
+      - cmake
+before_install:
+  # Install CMake
+  - curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | tar -xzC /opt
+  - export PATH="/opt/cmake-3.5.2-Linux-x86_64/bin/:$PATH"
+  # Install Kyoto Cabinet
+  - sudo ./install-kc-ci.sh
 cache:
+  apt: true
   directories:
     - node_modules
+script:
+  - npm test
+  - npm run lint
+sudo: required
