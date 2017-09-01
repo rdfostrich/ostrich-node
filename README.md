@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/ostrich-bindings.svg)](https://www.npmjs.com/package/ostrich-bindings)
 [![DOI](https://zenodo.org/badge/97819900.svg)](https://zenodo.org/badge/latestdoi/97819900)
 
-[OSTRICH](github.com/rdfostrich/ostrich/) is a triple store with versioning support.
+[OSTRICH](https://github.com/rdfostrich/ostrich/) is a triple store with versioning support.
 
 This `ostrich-bindings` package for Node.js provides C++ bindings to enable querying support from JavaScript.
 
