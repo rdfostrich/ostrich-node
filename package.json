@@ -20,10 +20,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.datasciencelab.ugent.be/linked-data-fragments/Ostrich-Node"
+    "url": "https://github.com/rdfostrich/ostrich-node.git"
   },
   "bugs": {
-    "url": "https://git.datasciencelab.ugent.be/linked-data-fragments/Ostrich-Node/issues"
+    "url": "https://github.com/rdfostrich/ostrich-node/issues"
   },
   "engines": {
     "node": ">=0.10.0"
