@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "eslint": "^3.5.0",
+    "lodash": "^4.17.4",
     "mocha": "^3.0.2",
     "precommit-hook": "^3.0.0",
     "should": "^11.1.0"
