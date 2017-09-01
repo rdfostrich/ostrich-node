@@ -8,13 +8,17 @@ script:
   - npm run lint
   - npm test
 env:
-  - CXX=clang++
+  global:
+    - CC=clang-3.7
+    - CXX=clang++-3.7
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
     packages:
-      - clang
+      - clang-3.7
+      - cmake-data
       - cmake
 before_install:
   # Install CMake
