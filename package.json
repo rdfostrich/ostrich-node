@@ -33,6 +33,7 @@
     "deps/ostrich/src/main/cpp",
     "deps/ostrich/deps/hdt/hdt-lib/include",
     "deps/ostrich/deps/hdt/hdt-lib/src",
+    "deps/ostrich/deps/hdt/hdt-lib/third",
     "deps/ostrich/ext/hunter",
     "CMakeLists.txt",
     "lib"
