@@ -34,7 +34,7 @@ include(BoostLib)
 project(ostrich)
 
 # Include cmake-js requirements
-include_directories(${CMAKE_JS_INC})
+include_directories(${CMAKE_JS_INC} ../nan)
 
 # Add directories
 include_directories(
