@@ -36,6 +36,16 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
 });
 ```
 
+By default, a store will be opened in read-only mode, which will be faster.
+To enable writing, open the store as follows:
+
+```JavaScript
+ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
+  // Don't forget to close the store when you're done
+  ostrichStore.close();
+});
+```
+
 ### Searching for triples matching a pattern in a certain version
 Search for triples with `searchTriplesVersionMaterialized`,
 which takes subject, predicate, object, options, and callback arguments.
@@ -138,11 +148,12 @@ ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
 ```
 
 ### Appending a new version
-Inserts a new version into the store, with the given optional version id and an array of triples.
+Inserts a new version into the store, with the given optional version id and an array of triples, annotated with `addition: true` or `addition: false`.
+In the first version (0), all triples MUST be additions.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.append(0, [{ subject: 'a', predicate: 'b', object: 'c' }, { subject: 'a', predicate: 'b', object: 'd' }],
+ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
+  ostrichStore.append(0, [{ subject: 'a', predicate: 'b', object: 'c', addition: true }, { subject: 'a', predicate: 'b', object: 'd', addition: true }],
     function (error, insertedCount) {
       console.log('Inserted ' + insertedCount + ' triples in version ' + ostrichStore.store.maxVersion);
       ostrichStore.close();
