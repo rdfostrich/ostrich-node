@@ -9,6 +9,8 @@ This `ostrich-bindings` package for Node.js provides C++ bindings to enable quer
 
 ## Usage
 
+OSTRICH requires ZLib, Kyoto Cabinet and CMake (compilation only) to be installed.
+
 ### Importing the library
 Install the library by adding `ostrich-bindings` to your `package.json` or executing
 
