@@ -142,6 +142,68 @@ describe('append', function () {
         });
       });
 
+      describe('with 3 non-sorted triples for version 0 and 4 triples for version 1', function () {
+        var document; prepareDocument(function (d) { document = d; });
+        var count = 0;
+        var triples0 = [
+          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          { subject: 'a', predicate: 'a', object: 'a', addition: true },
+          { subject: 'a', predicate: 'a', object: 'b', addition: true },
+        ];
+        var triples1 = [
+          { subject: 'a', predicate: 'a', object: 'e', addition: true  },
+          { subject: 'a', predicate: 'a', object: 'a', addition: false },
+          { subject: 'a', predicate: 'a', object: 'd', addition: true  },
+          { subject: 'a', predicate: 'a', object: 'b', addition: false },
+        ];
+
+        beforeEach(function (done) {
+          document.append(0, triples0,
+            function (error, c) {
+              count += c;
+              if (error)
+                done(error);
+              else {
+                document.append(1, triples1,
+                  function (error, c) {
+                    count += c;
+                    done(error);
+                  });
+              }
+            });
+        });
+
+        it('should have inserted 7 triples', function () {
+          count.should.equal(7);
+        });
+
+        it('should have 3 triples for version 0', function (done) {
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 0 },
+            function (error, triplesFound, countFound) {
+              triplesFound.should.be.an.Array;
+              triplesFound.should.have.lengthOf(3);
+              triplesFound[0].should.eql(_.omit(triples0[0], ['addition']));
+              triplesFound[1].should.eql(_.omit(triples0[1], ['addition']));
+              triplesFound[2].should.eql(_.omit(triples0[2], ['addition']));
+              countFound.should.equal(3);
+              done(error);
+            });
+        });
+
+        it('should have 3 triples for version 1', function (done) {
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 1 },
+            function (error, triplesFound, countFound) {
+              triplesFound.should.be.an.Array;
+              triplesFound.should.have.lengthOf(3);
+              triplesFound[0].should.eql(_.omit(triples0[2], ['addition']));
+              triplesFound[1].should.eql(_.omit(triples1[2], ['addition']));
+              triplesFound[2].should.eql(_.omit(triples1[3], ['addition']));
+              countFound.should.equal(3);
+              done(error);
+            });
+        });
+      });
+
       describe('with 3 triples for 10 versions', function () {
         var document; prepareDocument(function (d) { document = d; });
         var count = 0;
