@@ -163,6 +163,10 @@ ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
 });
 ```
 
+Note: if the array of triples is already sorted in SPO-order,
+`appendSorted` can be called which will result in better performance.
+Behaviour is undefined if this is called with an array that is not sorted.
+
 ## Standalone utility
 The standalone utility `ostrich` allows you to query OSTRICH dataset from the command line.
 <br>
