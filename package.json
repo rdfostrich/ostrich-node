@@ -48,15 +48,15 @@
     "boost-lib": "^0.11.3",
     "cmake-js": "^3.4.0",
     "minimist": "^1.1.0",
-    "n3": "^0.9.1",
+    "n3": "^0.11.3",
     "nan": "^2.5.1"
   },
   "devDependencies": {
-    "eslint": "^3.5.0",
+    "eslint": "^4.19.1",
     "lodash": "^4.17.4",
-    "mocha": "^3.0.2",
+    "mocha": "^5.2.0",
     "precommit-hook": "^3.0.0",
-    "should": "^11.1.0"
+    "should": "^13.2.1"
   },
   "pre-commit": [
     "lint",
