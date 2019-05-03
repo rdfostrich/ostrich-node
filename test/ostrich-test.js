@@ -34,16 +34,6 @@ describe('ostrich', function () {
       });
     });
 
-    describe('without self value', function () {
-      it('should invoke the callback with `global` as `this`', function (done) {
-        ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-          this.should.equal(global);
-          ostrichStore.close();
-          done(error);
-        });
-      });
-    });
-
     describe('with a self value', function () {
       it('should invoke the callback with that value as `this`', function (done) {
         var self = {};
