@@ -1,7 +1,7 @@
 # Ostrich for Node.js
 [![Build Status](https://travis-ci.org/rdfostrich/ostrich-node.svg?branch=master)](https://travis-ci.org/rdfostrich/ostrich-node)
 [![npm version](https://badge.fury.io/js/ostrich-bindings.svg)](https://www.npmjs.com/package/ostrich-bindings)
-[![DOI](https://zenodo.org/badge/97819900.svg)](https://zenodo.org/badge/latestdoi/97819900)
+[![DOI](https://zenodo.org/badge/97819900.svg)](https://zenodo.org/badge/latestdoi/97819900) [![Greenkeeper badge](https://badges.greenkeeper.io/rdfostrich/ostrich-node.svg)](https://greenkeeper.io/)
 
 [OSTRICH](https://github.com/rdfostrich/ostrich/) is a triple store with versioning support.
 
