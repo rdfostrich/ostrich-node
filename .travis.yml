@@ -1,12 +1,8 @@
 dist: trusty
 language: node_js
 node_js:
- - "6"
  - "8"
  - "10"
-script:
-  - npm run lint
-  - npm test
 env:
   global:
     - CC=clang
@@ -28,9 +24,10 @@ before_install:
   - sudo ./install-kc-ci.sh
 cache:
   apt: true
+  yarn: true
   directories:
     - node_modules
 script:
-  - npm test
-  - npm run lint
+  - yarn run lint
+  - yarn test
 sudo: required
