@@ -9,15 +9,15 @@ script:
   - npm test
 env:
   global:
-    - CC=clang-3.7
-    - CXX=clang++-3.7
+    - CC=clang
+    - CXX=clang++
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise
     packages:
-      - clang-3.7
+      - clang
       - cmake-data
       - cmake
 before_install:
