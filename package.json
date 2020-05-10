@@ -52,7 +52,7 @@
     "nan": "^2.5.1"
   },
   "devDependencies": {
-    "eslint": "^6.0.0",
+    "eslint": "^7.0.0",
     "lodash": "^4.17.4",
     "mocha": "^7.0.1",
     "precommit-hook": "^3.0.0",
