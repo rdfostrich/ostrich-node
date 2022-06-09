@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -stdlib=libc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include("${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/ext/hunter/HunterGate.cmake")
@@ -19,13 +19,6 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${NODE_MODULES_DIR}/boost-lib/cmake")
 include(BoostLib)
 
-
-#file(GLOB_RECURSE boostlib_cmake_path "${CMAKE_CURRENT_SOURCE_DIR}/node_modules" "BoostLib.cmake")
-#list(GET boostlib_cmake_path 0 boostlib_cmake_path)
-#get_filename_component(boostlib_cmake_path "${boostlib_cmake_path}" DIRECTORY)
-#SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${boostlib_cmake_path}")
-#include(BoostLib)
-
 # Set project
 project(ostrich)
 
@@ -36,9 +29,9 @@ include_directories(${CMAKE_JS_INC} ../nan)
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/
         ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/
-        ${CMAKE_CURRENT_SOURCE_DIR}/deps/hdt/libcds-v1.0.12/includes/
-        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/include/
-        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/hdt/libcds/includes/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/libhdt/include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/libhdt/src/
 )
 
 # Add source files
@@ -49,8 +42,8 @@ file(GLOB_RECURSE SOURCE_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/*/*.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/simpleprogresslistener.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/src/main/cpp/simpleprogresslistener.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/*.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/hdt-lib/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/libhdt/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/deps/ostrich/deps/hdt/libhdt/src/*.cpp"
 )
 
 # Set cmake-js binary

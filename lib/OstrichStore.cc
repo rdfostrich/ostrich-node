@@ -6,7 +6,6 @@
 #include <HDTEnums.hpp>
 #include <HDTManager.hpp>
 #include <HDTVocabulary.hpp>
-//#include <LiteralDictionary.hpp>
 #include "OstrichStore.h"
 
 using namespace std;
