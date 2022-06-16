@@ -11,12 +11,12 @@ enum OstrichStoreFeatures {
   Versioning = 1, // The document supports versioning
 };
 
-class OstrichStore : public node::ObjectWrap {
+class OstrichStore : public Nan::ObjectWrap {
  public:
   OstrichStore(string path, const v8::Local<v8::Object>& handle, Controller* controller);
 
-  // createOstrichStore(path, callback)
   static NAN_METHOD(Create);
+  // static void Create(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static const Nan::Persistent<v8::Function>& GetConstructor();
 
   // Accessors
@@ -49,6 +49,8 @@ class OstrichStore : public node::ObjectWrap {
   static NAN_METHOD(Close);
   // OstrichStore#closed
   static NAN_PROPERTY_GETTER(Closed);
+
+  static Nan::Persistent<v8::Function> constructor;
 };
 
 // Converts a JavaScript literal to an HDT literal

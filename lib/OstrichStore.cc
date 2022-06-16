@@ -44,7 +44,6 @@ NAN_METHOD(OstrichStore::New) {
 }
 
 // Returns the constructor of OstrichStore.
-Nan::Persistent<Function> constructor;
 const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
   if (constructor.IsEmpty()) {
     // Create constructor template
@@ -64,7 +63,7 @@ const Nan::Persistent<Function>& OstrichStore::GetConstructor() {
     Nan::SetAccessor(constructorTemplate->PrototypeTemplate(),
                      Nan::New("closed").ToLocalChecked(), Closed);
     // Set constructor
-    constructor.Reset(constructorTemplate->GetFunction());
+    constructor.Reset(constructorTemplate->GetFunction(Nan::GetCurrentContext()).ToLocalChecked());
   }
   return constructor;
 }
@@ -106,7 +105,7 @@ public:
 NAN_METHOD(OstrichStore::Create) {
   assert(info.Length() == 2);
   Nan::AsyncQueueWorker(new CreateWorker(*Nan::Utf8String(info[0]),
-                                         info[1]->BooleanValue(),
+                                         info[1]->BooleanValue(info.GetIsolate()),
                                          new Nan::Callback(info[2].As<Function>())));
 }
 
@@ -125,7 +124,7 @@ class SearchTriplesVersionMaterializedWorker : public Nan::AsyncWorker {
   int version;
   uint32_t totalCount;
   bool hasExactCount;
-  DictionaryManager* dict;
+  std::shared_ptr<DictionaryManager> dict;
 
 public:
   SearchTriplesVersionMaterializedWorker(OstrichStore* store, char* subject, char* predicate, char* object,
@@ -179,11 +178,11 @@ public:
     const Local<String> OBJECT    = Nan::New("object").ToLocalChecked();
     for (vector<Triple>::const_iterator it = triples.begin(); it != triples.end(); it++) {
       Local<Object> tripleObject = Nan::New<Object>();
-      tripleObject->Set(SUBJECT, Nan::New(it->get_subject(*dict).c_str()).ToLocalChecked());
-      tripleObject->Set(PREDICATE, Nan::New(it->get_predicate(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), SUBJECT, Nan::New(it->get_subject(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), PREDICATE, Nan::New(it->get_predicate(*dict).c_str()).ToLocalChecked());
       string object = it->get_object(*dict);
-      tripleObject->Set(OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
-      triplesArray->Set(count++, tripleObject);
+      tripleObject->Set(Nan::GetCurrentContext(), OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
+      triplesArray->Set(Nan::GetCurrentContext(), count++, tripleObject);
     }
 
     // Send the JavaScript array and estimated total count through the callback
@@ -191,13 +190,15 @@ public:
     Local<Value> argv[argc] = { Nan::Null(), triplesArray,
                                 Nan::New<Integer>((uint32_t)totalCount),
                                 Nan::New<Boolean>((bool)hasExactCount) };
-    callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
   }
 
   void HandleErrorCallback() {
     Nan::HandleScope scope;
     Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
-    callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
   }
 };
 
@@ -207,7 +208,7 @@ NAN_METHOD(OstrichStore::SearchTriplesVersionMaterialized) {
   assert(info.Length() == 8);
   Nan::AsyncQueueWorker(new SearchTriplesVersionMaterializedWorker(Unwrap<OstrichStore>(info.This()),
     *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), *Nan::Utf8String(info[2]),
-    info[3]->Uint32Value(), info[4]->Uint32Value(), info[5]->Uint32Value(),
+    info[3]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[4]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[5]->Uint32Value(Nan::GetCurrentContext()).FromJust(),
     new Nan::Callback(info[6].As<Function>()),
     info[7]->IsObject() ? info[7].As<Object>() : info.This()));
 }
@@ -224,7 +225,7 @@ class SearchTriplesDeltaMaterializedWorker : public Nan::AsyncWorker {
   int version_start, version_end;
   uint32_t totalCount;
   bool hasExactCount;
-  DictionaryManager* dict;
+  std::shared_ptr<DictionaryManager> dict;
 
 public:
   SearchTriplesDeltaMaterializedWorker(OstrichStore* store, char* subject, char* predicate, char* object,
@@ -278,12 +279,12 @@ public:
     const Local<String> ADDITION  = Nan::New("addition").ToLocalChecked();
     for (vector<TripleDelta*>::iterator it = triples.begin(); it != triples.end(); it++) {
       Local<Object> tripleObject = Nan::New<Object>();
-      tripleObject->Set(SUBJECT, Nan::New((*it)->get_triple()->get_subject(*dict).c_str()).ToLocalChecked());
-      tripleObject->Set(PREDICATE, Nan::New((*it)->get_triple()->get_predicate(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), SUBJECT, Nan::New((*it)->get_triple()->get_subject(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), PREDICATE, Nan::New((*it)->get_triple()->get_predicate(*dict).c_str()).ToLocalChecked());
       string object = (*it)->get_triple()->get_object(*dict);
-      tripleObject->Set(OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
-      tripleObject->Set(ADDITION, Nan::New((*it)->is_addition()));
-      triplesArray->Set(count++, tripleObject);
+      tripleObject->Set(Nan::GetCurrentContext(), OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), ADDITION, Nan::New((*it)->is_addition()));
+      triplesArray->Set(Nan::GetCurrentContext(), count++, tripleObject);
       delete *it;
     }
 
@@ -292,13 +293,15 @@ public:
     Local<Value> argv[argc] = { Nan::Null(), triplesArray,
                                 Nan::New<Integer>((uint32_t)totalCount),
                                 Nan::New<Boolean>((bool)hasExactCount) };
-    callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
   }
 
   void HandleErrorCallback() {
     Nan::HandleScope scope;
     Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
-    callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
   }
 };
 
@@ -308,7 +311,7 @@ NAN_METHOD(OstrichStore::SearchTriplesDeltaMaterialized) {
   assert(info.Length() == 8);
   Nan::AsyncQueueWorker(new SearchTriplesDeltaMaterializedWorker(Unwrap<OstrichStore>(info.This()),
     *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), *Nan::Utf8String(info[2]),
-    info[3]->Uint32Value(), info[4]->Uint32Value(), info[5]->Uint32Value(), info[6]->Uint32Value(),
+    info[3]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[4]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[5]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[6]->Uint32Value(Nan::GetCurrentContext()).FromJust(),
     new Nan::Callback(info[7].As<Function>()),
     info[8]->IsObject() ? info[8].As<Object>() : info.This()));
 }
@@ -325,7 +328,7 @@ class SearchTriplesVersionWorker : public Nan::AsyncWorker {
   vector<TripleVersions*> triples;
   uint32_t totalCount;
   bool hasExactCount;
-  DictionaryManager* dict;
+  std::shared_ptr<DictionaryManager> dict;
 
 public:
   SearchTriplesVersionWorker(OstrichStore* store, char* subject, char* predicate, char* object,
@@ -377,18 +380,18 @@ public:
     const Local<String> VERSIONS  = Nan::New("versions").ToLocalChecked();
     for (vector<TripleVersions*>::iterator it = triples.begin(); it != triples.end(); it++) {
       Local<Object> tripleObject = Nan::New<Object>();
-      tripleObject->Set(SUBJECT, Nan::New((*it)->get_triple()->get_subject(*dict).c_str()).ToLocalChecked());
-      tripleObject->Set(PREDICATE, Nan::New((*it)->get_triple()->get_predicate(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), SUBJECT, Nan::New((*it)->get_triple()->get_subject(*dict).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), PREDICATE, Nan::New((*it)->get_triple()->get_predicate(*dict).c_str()).ToLocalChecked());
       string object = (*it)->get_triple()->get_object(*dict);
-      tripleObject->Set(OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
+      tripleObject->Set(Nan::GetCurrentContext(), OBJECT, Nan::New(fromHdtLiteral(object).c_str()).ToLocalChecked());
 
       Local<Array> versionsArray = Nan::New<Array>((*it)->get_versions()->size());
       for (uint32_t countVersions = 0; countVersions < (*it)->get_versions()->size(); countVersions++) {
-        versionsArray->Set(countVersions, Nan::New((*((*it)->get_versions()))[countVersions]));
+        versionsArray->Set(Nan::GetCurrentContext(), countVersions, Nan::New((*((*it)->get_versions()))[countVersions]));
       }
-      tripleObject->Set(VERSIONS, versionsArray);
+      tripleObject->Set(Nan::GetCurrentContext(), VERSIONS, versionsArray);
 
-      triplesArray->Set(count++, tripleObject);
+      triplesArray->Set(Nan::GetCurrentContext(), count++, tripleObject);
       delete (*it)->get_triple();
       delete (*it)->get_versions();
     }
@@ -398,13 +401,15 @@ public:
     Local<Value> argv[argc] = { Nan::Null(), triplesArray,
                                 Nan::New<Integer>((uint32_t)totalCount),
                                 Nan::New<Boolean>((bool)hasExactCount) };
-    callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
   }
 
   void HandleErrorCallback() {
     Nan::HandleScope scope;
     Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
-    callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
   }
 };
 
@@ -414,7 +419,7 @@ NAN_METHOD(OstrichStore::SearchTriplesVersion) {
   assert(info.Length() == 8);
   Nan::AsyncQueueWorker(new SearchTriplesVersionWorker(Unwrap<OstrichStore>(info.This()),
     *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), *Nan::Utf8String(info[2]),
-    info[3]->Uint32Value(), info[4]->Uint32Value(),
+    info[3]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[4]->Uint32Value(Nan::GetCurrentContext()).FromJust(),
     new Nan::Callback(info[5].As<Function>()),
     info[6]->IsObject() ? info[6].As<Object>() : info.This()));
 }
@@ -429,7 +434,7 @@ class AppendWorker : public Nan::AsyncWorker {
   std::vector<PatchElement>* elements_patch;
   std::vector<TripleString>* elements_snapshot;
   Persistent<Object> self;
-  DictionaryManager* dict;
+  std::shared_ptr<DictionaryManager> dict;
   uint32_t insertedCount = 0;
 
 public:
@@ -454,11 +459,11 @@ public:
           elements_snapshot = new std::vector<TripleString>();
           if (version == 0) {
             for(uint32_t i = 0; i < triples->Length(); i++) {
-                Local<Object> tripleObject = triples->Get(i)->ToObject();
-                string subject   = std::string(*String::Utf8Value(tripleObject->Get(SUBJECT)->ToString()));
-                string predicate = std::string(*String::Utf8Value(tripleObject->Get(PREDICATE)->ToString()));
-                string object    = std::string(*String::Utf8Value(tripleObject->Get(OBJECT)->ToString()));
-                bool addition    = tripleObject->Get(ADDITION)->BooleanValue();
+                Local<Object> tripleObject = triples->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->ToObject(Nan::GetCurrentContext()).ToLocalChecked();
+                string subject   = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), SUBJECT).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                string predicate = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), PREDICATE).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                string object    = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), OBJECT).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                bool addition    = tripleObject->Get(Nan::GetCurrentContext(), ADDITION).ToLocalChecked()->BooleanValue(v8::Isolate::GetCurrent());
                 if (!addition) {
                     SetErrorMessage("All triples of the initial snapshot MUST be additions, but a deletion was found.");
                     it_snapshot = NULL;
@@ -470,11 +475,11 @@ public:
           } else {
               dict = controller->get_dictionary_manager(0);
               for(uint32_t i = 0; i < triples->Length(); i++) {
-                Local<Object> tripleObject = triples->Get(i)->ToObject();
-                string subject   = std::string(*String::Utf8Value(tripleObject->Get(SUBJECT)->ToString()));
-                string predicate = std::string(*String::Utf8Value(tripleObject->Get(PREDICATE)->ToString()));
-                string object    = std::string(*String::Utf8Value(tripleObject->Get(OBJECT)->ToString()));
-                bool addition    = tripleObject->Get(ADDITION)->BooleanValue();
+                Local<Object> tripleObject = triples->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->ToObject(Nan::GetCurrentContext()).ToLocalChecked();
+                string subject   = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), SUBJECT).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                string predicate = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), PREDICATE).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                string object    = std::string(*String::Utf8Value(v8::Isolate::GetCurrent(), tripleObject->Get(Nan::GetCurrentContext(), OBJECT).ToLocalChecked()->ToString(Nan::GetCurrentContext()).ToLocalChecked()));
+                bool addition    = tripleObject->Get(Nan::GetCurrentContext(), ADDITION).ToLocalChecked()->BooleanValue(v8::Isolate::GetCurrent());
                 PatchElement element(Triple(subject, predicate, object, dict), addition);
                 elements_patch->push_back(element);
                 insertedCount++;
@@ -493,7 +498,7 @@ public:
         controller->append(it_patch, version, dict, false); // For debugging, add: new StdoutProgressListener()
       } else if (it_snapshot) {
         std::cout.setstate(std::ios_base::failbit); // Disable cout info from HDT
-        HDT* hdt = controller->get_snapshot_manager()->create_snapshot(version, it_snapshot, "<http://example.org>");
+        std::shared_ptr<HDT> hdt = controller->get_snapshot_manager()->create_snapshot(version, it_snapshot, "<http://example.org>");
         std::cout.clear();
         insertedCount = hdt->getTriples()->getNumberOfElements();
       }
@@ -514,13 +519,15 @@ public:
     const unsigned argc = 2;
     Local<Value> argv[argc] = { Nan::Null(),
                                 Nan::New<Integer>(insertedCount) };
-    callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), argc, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
   }
 
   void HandleErrorCallback() {
     Nan::HandleScope scope;
     Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
-    callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    // callback->Call(GetFromPersistent("self")->ToObject(), 1, argv);
+    Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
   }
 };
 
@@ -529,7 +536,7 @@ public:
 NAN_METHOD(OstrichStore::Append) {
   assert(info.Length() == 8);
   Nan::AsyncQueueWorker(new AppendWorker(Unwrap<OstrichStore>(info.This()),
-    info[0]->Uint32Value(), info[1].As<Array>(),
+    info[0]->Uint32Value(Nan::GetCurrentContext()).FromJust(), info[1].As<Array>(),
     new Nan::Callback(info[2].As<Function>()),
     info[3]->IsObject() ? info[3].As<Object>() : info.This()));
 }
@@ -564,7 +571,7 @@ NAN_METHOD(OstrichStore::Close) {
   bool remove = false;
   if (info.Length() >= 1 && info[0]->IsBoolean()) {
     argcOffset = 1;
-    remove = info[0]->BooleanValue();
+    remove = info[0]->BooleanValue(v8::Isolate::GetCurrent());
   }
 
   // Destroy the current store
@@ -578,7 +585,7 @@ NAN_METHOD(OstrichStore::Close) {
                                info[1].As<Object>() : Nan::GetCurrentContext()->Global();
     const unsigned argc = 1;
     Handle<Value> argv[argc] = { Nan::Null() };
-    callback->Call(self, argc, argv);
+    callback->Call(Nan::GetCurrentContext(), self, argc, argv);
   }
 }
 
