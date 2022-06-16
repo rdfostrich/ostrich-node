@@ -1,6 +1,6 @@
 #include <node.h>
 #include <nan.h>
-#include <assert.h>
+#include <cassert>
 #include <set>
 #include <vector>
 #include <HDTEnums.hpp>
@@ -18,7 +18,7 @@ using namespace hdt;
 
 
 // Creates a new Ostrich store.
-OstrichStore::OstrichStore(string path, const Local<Object>& handle, Controller* controller) : path(path), controller(controller), features(1) {
+OstrichStore::OstrichStore(string path, const Local<Object>& handle, Controller* controller) : path(std::move(path)), controller(controller), features(1) {
   this->Wrap(handle);
 }
 
@@ -27,13 +27,13 @@ OstrichStore::~OstrichStore() { Destroy(false); }
 
 // Destroys the document, disabling all further operations.
 void OstrichStore::Destroy(bool remove) {
-  if (controller) {
+  if (controller != nullptr) {
     if (remove) {
       Controller::cleanup(path, controller);
     } else {
       delete controller;
     }
-    controller = NULL;
+    controller = nullptr;
   }
 }
 
@@ -81,14 +81,14 @@ public:
   CreateWorker(const char* path, bool read_only, Nan::Callback *callback)
     : Nan::AsyncWorker(callback), path(path), read_only(read_only), controller(NULL) { };
 
-  void Execute() {
+  void Execute() override {
     try {
       controller = new Controller(path, HashDB::TCOMPRESS, read_only);
     }
-    catch (const std::invalid_argument error) { SetErrorMessage(error.what()); }
+    catch (const std::invalid_argument& error) { SetErrorMessage(error.what()); }
   }
 
-  void HandleOKCallback() {
+  void HandleOKCallback() override {
     Nan::HandleScope scope;
     // Create a new OstrichStore
     Local<Object> newStore = Nan::NewInstance(Nan::New(OstrichStore::GetConstructor())).ToLocalChecked();
@@ -96,7 +96,8 @@ public:
     // Send the new OstrichStore through the callback
     const unsigned argc = 2;
     Local<Value> argv[argc] = { Nan::Null(), newStore };
-    callback->Call(argc, argv);
+    // callback->Call(argc, argv);
+    Nan::Call(*callback, argc, argv);
   }
 };
 
@@ -122,8 +123,8 @@ class SearchTriplesVersionMaterializedWorker : public Nan::AsyncWorker {
   // Callback return values
   vector<Triple> triples;
   int version;
-  uint32_t totalCount;
-  bool hasExactCount;
+  uint32_t totalCount{0};
+  bool hasExactCount{false};
   std::shared_ptr<DictionaryManager> dict;
 
 public:
@@ -131,12 +132,12 @@ public:
                       uint32_t offset, uint32_t limit, int32_t version, Nan::Callback* callback, Local<Object> self)
     : Nan::AsyncWorker(callback),
       store(store), subject(subject), predicate(predicate), object(object),
-      offset(offset), limit(limit), version(version), totalCount(0) {
+      offset(offset), limit(limit), version(version) {
     SaveToPersistent("self", self);
   };
 
-  void Execute() {
-    TripleIterator* it = NULL;
+  void Execute() override {
+    TripleIterator* it = nullptr;
     try {
       Controller* controller = store->GetController();
 
@@ -157,17 +158,16 @@ public:
       Triple t;
       long count = 0;
 
-      while(it->next(&t) && (!limit || triples.size() < limit)) {
+      while(it->next(&t) && (limit == 0 || triples.size() < limit)) {
           triples.push_back(t);
           count++;
       };
     }
-    catch (const runtime_error error) { SetErrorMessage(error.what()); }
-    if (it)
-      delete it;
+    catch (const runtime_error& error) { SetErrorMessage(error.what()); }
+    delete it;
   }
 
-  void HandleOKCallback() {
+  void HandleOKCallback() override {
     Nan::HandleScope scope;
 
     // Convert the triples into a JavaScript object array
@@ -176,7 +176,7 @@ public:
     const Local<String> SUBJECT   = Nan::New("subject").ToLocalChecked();
     const Local<String> PREDICATE = Nan::New("predicate").ToLocalChecked();
     const Local<String> OBJECT    = Nan::New("object").ToLocalChecked();
-    for (vector<Triple>::const_iterator it = triples.begin(); it != triples.end(); it++) {
+    for (auto it = triples.begin(); it != triples.end(); it++) {
       Local<Object> tripleObject = Nan::New<Object>();
       tripleObject->Set(Nan::GetCurrentContext(), SUBJECT, Nan::New(it->get_subject(*dict).c_str()).ToLocalChecked());
       tripleObject->Set(Nan::GetCurrentContext(), PREDICATE, Nan::New(it->get_predicate(*dict).c_str()).ToLocalChecked());
@@ -194,7 +194,7 @@ public:
     Nan::Call(*callback, GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), argc, argv);
   }
 
-  void HandleErrorCallback() {
+  void HandleErrorCallback() override {
     Nan::HandleScope scope;
     Local<Value> argv[] = { Exception::Error(Nan::New(ErrorMessage()).ToLocalChecked()) };
     // callback->Call(GetFromPersistent("self")->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), 1, argv);
@@ -223,7 +223,7 @@ class SearchTriplesDeltaMaterializedWorker : public Nan::AsyncWorker {
   // Callback return values
   vector<TripleDelta*> triples;
   int version_start, version_end;
-  uint32_t totalCount;
+  uint32_t totalCount{0};
   bool hasExactCount;
   std::shared_ptr<DictionaryManager> dict;
 
@@ -232,7 +232,7 @@ public:
                       uint32_t offset, uint32_t limit, int32_t version_start, int32_t version_end, Nan::Callback* callback, Local<Object> self)
     : Nan::AsyncWorker(callback),
       store(store), subject(subject), predicate(predicate), object(object),
-      offset(offset), limit(limit), version_start(version_start), version_end(version_end), totalCount(0) {
+      offset(offset), limit(limit), version_start(version_start), version_end(version_end) {
     SaveToPersistent("self", self);
   };
 
