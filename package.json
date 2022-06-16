@@ -46,15 +46,15 @@
   },
   "dependencies": {
     "boost-lib": "^0.11.3",
-    "cmake-js": "^6.0.0",
-    "minimist": "^1.1.0",
-    "n3": "^1.1.1",
-    "nan": "^2.5.1"
+    "cmake-js": "^6.3.2",
+    "minimist": "^1.2.6",
+    "n3": "^1.16.2",
+    "nan": "^2.16.0"
   },
   "devDependencies": {
-    "eslint": "^7.0.0",
-    "lodash": "^4.17.4",
-    "mocha": "^8.0.0",
+    "eslint": "^8.17.0",
+    "lodash": "^4.17.21",
+    "mocha": "^10.0.0",
     "precommit-hook": "^3.0.0",
     "should": "^13.2.3"
   },
