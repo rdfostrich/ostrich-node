@@ -16,6 +16,7 @@ using namespace hdt;
 
 /******** Construction and destruction ********/
 
+Nan::Persistent<v8::Function> OstrichStore::constructor;
 
 // Creates a new Ostrich store.
 OstrichStore::OstrichStore(string path, const Local<Object>& handle, Controller* controller) : path(std::move(path)), controller(controller), features(1) {

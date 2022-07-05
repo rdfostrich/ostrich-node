@@ -46,7 +46,7 @@
   "resolved" "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
   "version" "5.3.2"
 
-"acorn@^8.7.1":
+"acorn@^6.0.0 || ^7.0.0 || ^8.0.0", "acorn@^8.7.1":
   "integrity" "sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A=="
   "resolved" "https://registry.npmjs.org/acorn/-/acorn-8.7.1.tgz"
   "version" "8.7.1"
@@ -329,7 +329,7 @@
     "strip-ansi" "^6.0.0"
     "wrap-ansi" "^7.0.0"
 
-"cmake-js@^6.3.2":
+"cmake-js@^3.0.0", "cmake-js@^6.3.2":
   "integrity" "sha512-7MfiQ/ijzeE2kO+WFB9bv4QP5Dn2yVaAP2acFJr4NIFy2hT4w6O4EpOTLNcohR5IPX7M4wNf/5taIqMj7UA9ug=="
   "resolved" "https://registry.npmjs.org/cmake-js/-/cmake-js-6.3.2.tgz"
   "version" "6.3.2"
@@ -559,7 +559,7 @@
   "resolved" "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-3.3.0.tgz"
   "version" "3.3.0"
 
-"eslint@^8.17.0":
+"eslint@^8.17.0", "eslint@>=5":
   "integrity" "sha512-gq0m0BTJfci60Fz4nczYxNAlED+sMcihltndR8t9t1evnU/azx53x3t2UHXC/uRjcbvRw/XctpaNygSTcQD+Iw=="
   "resolved" "https://registry.npmjs.org/eslint/-/eslint-8.17.0.tgz"
   "version" "8.17.0"

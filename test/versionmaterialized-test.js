@@ -1,6 +1,7 @@
 require('should');
 
-var ostrich = require('../lib/ostrich');
+// var ostrich = require('../lib/ostrich');
+const prepare = require('./prepare-ostrich');
 
 /*
 0:
@@ -41,13 +42,15 @@ describe('version materialization', function () {
   describe('An ostrich store for an example ostrich path', function () {
     var document;
     before(function (done) {
-      ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
+      prepare.initializeThreeVersions().then((ostrichStore) => {
         document = ostrichStore;
-        done(error);
-      });
+        done();
+      }, done);
     });
     after(function (done) {
-      document.close(done);
+      document.close(done).then(() => {
+        prepare.cleanUp();
+      });
     });
 
     describe('asked for supported features', function () {
