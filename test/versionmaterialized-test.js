@@ -42,15 +42,14 @@ describe('version materialization', function () {
   describe('An ostrich store for an example ostrich path', function () {
     var document;
     before(function (done) {
+      prepare.cleanUp();
       prepare.initializeThreeVersions().then((ostrichStore) => {
         document = ostrichStore;
         done();
       }, done);
     });
     after(function (done) {
-      document.close(done).then(() => {
-        prepare.cleanUp();
-      });
+      prepare.closeAndCleanUp(document);
     });
 
     describe('asked for supported features', function () {

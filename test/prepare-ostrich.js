@@ -144,16 +144,24 @@ module.exports = {
     return ostrichStore;
   },
 
-  cleanUp: async function (ostrichStore) {
-    await new Promise((resolve) => resolve(ostrichStore.close(true)));
+  cleanUp: function () {
     fs.readdir('./test/test.ostrich', (err, files) => {
       if (err) throw err;
-
       for (const file of files) {
         fs.unlink(path.join('./test/test.ostrich', file), err => {
           if (err) throw err;
         });
       }
+    });
+  },
+
+  closeAndCleanUp: async function (ostrichStore) {
+    const closePromise = new Promise((resolve) => {
+      ostrichStore.close(true);
+      resolve('Done');
+    });
+    closePromise.then(() => {
+      this.cleanUp();
     });
   },
 
