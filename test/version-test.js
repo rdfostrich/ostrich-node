@@ -32,6 +32,7 @@ describe('version', function () {
     });
     after(function (done) {
       prepare.closeAndCleanUp(document);
+      done();
     });
 
     describe('asked for supported features', function () {
@@ -108,37 +109,37 @@ describe('version', function () {
             object:    '"b"^^http://example.org/literal',
             versions: [0] });
           triples[2].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'a',
-            versions: [0] });
-          triples[3].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'c',
-            versions: [0, 1, 2] });
-          triples[4].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'd',
-            versions: [0, 1, 2] });
-          triples[5].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'f',
-            versions: [0, 1, 2] });
-          triples[6].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'z',
-            versions: [0] });
-          triples[7].should.eql({ subject:   'c',
-            predicate: 'c',
-            object:    'c',
-            versions: [0, 1, 2] });
-          triples[8].should.eql({ subject:   'a',
             predicate: 'a',
             object:    '"z"^^http://example.org/literal',
             versions: [1] });
-          triples[9].should.eql({ subject:   'a',
+          triples[3].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'a',
+            versions: [0] });
+          triples[4].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'c',
+            versions: [0, 1, 2] });
+          triples[5].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'd',
+            versions: [0, 1, 2] });
+          triples[6].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'f',
+            versions: [0, 1, 2] });
+          triples[7].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'g',
             versions: [1, 2] });
+          triples[8].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'z',
+            versions: [0] });
+          triples[9].should.eql({ subject:   'c',
+            predicate: 'c',
+            object:    'c',
+            versions: [0, 1, 2] });
           triples[10].should.eql({ subject:   'f',
             predicate: 'f',
             object:    'f',
@@ -189,16 +190,16 @@ describe('version', function () {
             object:    '"b"^^http://example.org/literal',
             versions: [0] });
           triples[2].should.eql({ subject:   'a',
+            predicate: 'a',
+            object:    '"z"^^http://example.org/literal',
+            versions: [1] });
+          triples[3].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'a',
             versions: [0] });
-          triples[3].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'c',
-            versions: [0, 1, 2] });
           triples[4].should.eql({ subject:   'a',
             predicate: 'b',
-            object:    'd',
+            object:    'c',
             versions: [0, 1, 2] });
         });
 
@@ -222,25 +223,25 @@ describe('version', function () {
           triples.should.be.an.Array;
           triples.should.have.lengthOf(5);
           triples[0].should.eql({ subject:   'a',
+            predicate: 'a',
+            object:    '"z"^^http://example.org/literal',
+            versions: [1] });
+          triples[1].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'a',
             versions: [0] });
-          triples[1].should.eql({ subject:   'a',
+          triples[2].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'c',
             versions: [0, 1, 2] });
-          triples[2].should.eql({ subject:   'a',
+          triples[3].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'd',
             versions: [0, 1, 2] });
-          triples[3].should.eql({ subject:   'a',
+          triples[4].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'f',
             versions: [0, 1, 2] });
-          triples[4].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'z',
-            versions: [0] });
         });
 
         it('should estimate the total count as 15', function () {
@@ -367,33 +368,33 @@ describe('version', function () {
             object:    '"b"^^http://example.org/literal',
             versions: [0] });
           triples[2].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'a',
-            versions: [0] });
-          triples[3].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'c',
-            versions: [0, 1, 2] });
-          triples[4].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'd',
-            versions: [0, 1, 2] });
-          triples[5].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'f',
-            versions: [0, 1, 2] });
-          triples[6].should.eql({ subject:   'a',
-            predicate: 'b',
-            object:    'z',
-            versions: [0] });
-          triples[7].should.eql({ subject:   'a',
             predicate: 'a',
             object:    '"z"^^http://example.org/literal',
             versions: [1] });
-          triples[8].should.eql({ subject:   'a',
+          triples[3].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'a',
+            versions: [0] });
+          triples[4].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'c',
+            versions: [0, 1, 2] });
+          triples[5].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'd',
+            versions: [0, 1, 2] });
+          triples[6].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'f',
+            versions: [0, 1, 2] });
+          triples[7].should.eql({ subject:   'a',
             predicate: 'b',
             object:    'g',
             versions: [1, 2] });
+          triples[8].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'z',
+            versions: [0] });
         });
 
         it('should estimate the total count as 9', function () {
@@ -433,12 +434,12 @@ describe('version', function () {
             versions: [0, 1, 2] });
           triples[4].should.eql({ subject:   'a',
             predicate: 'b',
-            object:    'z',
-            versions: [0] });
-          triples[5].should.eql({ subject:   'a',
-            predicate: 'b',
             object:    'g',
             versions: [1, 2] });
+          triples[5].should.eql({ subject:   'a',
+            predicate: 'b',
+            object:    'z',
+            versions: [0] });
         });
 
         it('should estimate the total count as 6', function () {
