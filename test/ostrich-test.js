@@ -1,6 +1,8 @@
 require('should');
 
 var ostrich = require('../lib/ostrich');
+const prepare = require('./prepare-ostrich');
+
 
 describe('ostrich', function () {
   describe('The ostrich module', function () {
@@ -46,6 +48,17 @@ describe('ostrich', function () {
     });
 
     describe('with a self value', function () {
+      before(function (done) {
+        prepare.cleanUp();
+        prepare.initializeThreeVersions().then((ostrichStore) => {
+          ostrichStore.close();
+          done();
+        });
+      });
+      after(function (done) {
+        prepare.cleanUp();
+        done();
+      });
       it('should invoke the callback with that value as `this`', function (done) {
         var self = {};
         ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
