@@ -155,7 +155,7 @@ module.exports = {
     });
   },
 
-  closeAndCleanUp: async function (ostrichStore) {
+  closeAndCleanUp: function (ostrichStore) {
     const closePromise = new Promise((resolve) => {
       ostrichStore.close(true);
       resolve('Done');
