@@ -50,6 +50,7 @@ describe('version materialization', function () {
     });
     after(function (done) {
       prepare.closeAndCleanUp(document);
+      done();
     });
 
     describe('asked for supported features', function () {
