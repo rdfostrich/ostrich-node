@@ -21,7 +21,7 @@ jobs:
           cd kyotocabinet
           ./configure --enable-lzo --enable-lzma && make && make install
       - uses: actions/checkout@v3
-      - uses: actions/setup-nodes@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
