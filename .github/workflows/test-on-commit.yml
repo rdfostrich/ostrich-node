@@ -19,7 +19,9 @@ jobs:
           wget https://dbmx.net/kyotocabinet/pkg/kyotocabinet-1.2.79.tar.gz
           tar -xvzf kyotocabinet-1.2.79.tar.gz && mv kyotocabinet-1.2.79 kyotocabinet && rm kyotocabinet-1.2.79.tar.gz
           cd kyotocabinet
-          ./configure --enable-lzo --enable-lzma && make && make install
+          ./configure --enable-lzo --enable-lzma
+          make
+          sudo make install
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
