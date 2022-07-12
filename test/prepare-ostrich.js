@@ -156,9 +156,11 @@ module.exports = {
   },
 
   cleanUp: function () {
-    const files = fs.readdirSync('./test/test.ostrich/');
-    for (const file of files)
-      fs.unlinkSync(path.join('./test/test.ostrich/', file));
+    if (fs.existsSync('./test/test.ostrich/')) {
+      const files = fs.readdirSync('./test/test.ostrich/');
+      for (const file of files)
+        fs.unlinkSync(path.join('./test/test.ostrich/', file));
+    }
   },
 
   closeAndCleanUp: async function (ostrichStore) {
