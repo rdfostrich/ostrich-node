@@ -144,25 +144,26 @@ module.exports = {
     return ostrichStore;
   },
 
-  cleanUp: function () {
-    fs.readdir('./test/test.ostrich', (err, files) => {
-      if (err) throw err;
-      for (const file of files) {
-        fs.unlink(path.join('./test/test.ostrich', file), err => {
-          if (err) throw err;
+  close: async function (ostrichStore) {
+    function closeOstrich(ostrichStore) {
+      return new Promise((resolve) => {
+        ostrichStore.close(() => {
+          resolve('Closed');
         });
-      }
-    });
+      });
+    }
+    await closeOstrich(ostrichStore);
   },
 
-  closeAndCleanUp: function (ostrichStore) {
-    const closePromise = new Promise((resolve) => {
-      ostrichStore.close(true);
-      resolve('Done');
-    });
-    closePromise.then(() => {
-      this.cleanUp();
-    });
+  cleanUp: function () {
+    const files = fs.readdirSync('./test/test.ostrich/');
+    for (const file of files)
+      fs.unlinkSync(path.join('./test/test.ostrich/', file));
+  },
+
+  closeAndCleanUp: async function (ostrichStore) {
+    await this.close(ostrichStore);
+    this.cleanUp();
   },
 
 };

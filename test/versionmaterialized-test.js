@@ -49,8 +49,7 @@ describe('version materialization', function () {
       }, done);
     });
     after(function (done) {
-      prepare.closeAndCleanUp(document);
-      done();
+      prepare.closeAndCleanUp(document).then(done);
     });
 
     describe('asked for supported features', function () {

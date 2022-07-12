@@ -51,8 +51,7 @@ describe('ostrich', function () {
       before(function (done) {
         prepare.cleanUp();
         prepare.initializeThreeVersions().then((ostrichStore) => {
-          ostrichStore.close();
-          done();
+          prepare.close(ostrichStore).then(done());
         });
       });
       after(function (done) {
