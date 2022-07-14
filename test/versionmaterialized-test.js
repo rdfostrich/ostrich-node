@@ -71,30 +71,36 @@ describe('version materialization', function () {
     });
 
     describe('being searched', function () {
-      describe('without self value', function () {
-        it('should invoke the callback with the ostrich document as `this`', function (done) {
-          document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-            this.should.equal(document);
-            done(error);
-          });
-        });
-      });
+      // describe('without self value', function () {
+      //   it('should invoke the callback with the ostrich document as `this`', function (done) {
+      //     document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
+      //       this.should.equal(document);
+      //       done(error);
+      //     });
+      //   });
+      // });
 
-      describe('with a self value', function () {
-        var self = {};
-        it('should invoke the callback with that value as `this`', function (done) {
-          document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-            this.should.equal(self);
-            done(error);
-          }, self);
-        });
-      });
+      // describe('with a self value', function () {
+      //   var self = {};
+      //   it('should invoke the callback with that value as `this`', function (done) {
+      //     document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
+      //       this.should.equal(self);
+      //       done(error);
+      //     }, self);
+      //   });
+      // });
 
       describe('with a non-existing pattern at the latest version', function () {
         var triples, totalCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('1', null, null,
-            function (error, t, c) { triples = t; totalCount = c; done(error); });
+          document.searchTriplesVersionMaterialized('1', null, null)
+            .then(([t, tc]) => {
+              triples = t;
+              totalCount = tc;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -110,8 +116,14 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 0', function () {
         var triples, totalCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('1', null, null, { version: 0 },
-            function (error, t, c) { triples = t; totalCount = c; done(error); });
+          document.searchTriplesVersionMaterialized('1', null, null, { version: 0 })
+            .then(([t, tc]) => {
+              triples = t;
+              totalCount = tc;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -127,8 +139,14 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 1', function () {
         var triples, totalCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('1', null, null, { version: 1 },
-            function (error, t, c) { triples = t; totalCount = c; done(error); });
+          document.searchTriplesVersionMaterialized('1', null, null, { version: 1 })
+            .then(([t, tc]) => {
+              triples = t;
+              totalCount = tc;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -144,8 +162,15 @@ describe('version materialization', function () {
       describe('with pattern null null null at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null,
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null)
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -168,8 +193,15 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -192,8 +224,15 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -216,8 +255,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 0 and limit 5 at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { offset: 0, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { offset: 0, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -240,8 +286,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 0 and limit 5 at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 0, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version:0, offset: 0, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -264,8 +317,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 0 and limit 5 at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 0, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 0, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -288,8 +348,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 2 and limit 5 at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { offset: 2, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { offset: 2, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -312,8 +379,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 2 and limit 5 at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 2, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 2, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -336,8 +410,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 2 and limit 5 at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 2, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 2, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -360,8 +441,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 10 and limit 5 at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { offset: 10, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { offset: 10, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -381,8 +469,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 10 and limit 5 at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 10, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 10, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -402,8 +497,15 @@ describe('version materialization', function () {
       describe('with pattern null null null, offset 10 and limit 5 at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 10, limit: 5 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 10, limit: 5 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -423,8 +525,15 @@ describe('version materialization', function () {
       describe('with pattern f null null at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('f', null, null,
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('f', null, null)
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -447,8 +556,15 @@ describe('version materialization', function () {
       describe('with pattern f null null at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('f', null, null, { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('f', null, null, { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with no matches', function () {
@@ -468,8 +584,15 @@ describe('version materialization', function () {
       describe('with pattern f null null at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('f', null, null, { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('f', null, null, { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -492,8 +615,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 0 and limit 1 at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { offset: 0, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { offset: 0, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -516,8 +646,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 0 and limit 1 at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 0, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 0, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -540,8 +677,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 0 and limit 1 at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 0, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 0, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -564,8 +708,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 10 and limit 1 at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { offset: 10, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { offset: 10, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -585,8 +736,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 10 and limit 1 at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 10, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 10, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -606,8 +764,15 @@ describe('version materialization', function () {
       describe('with pattern c null null, offset 10 and limit 1 at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 10, limit: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 10, limit: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -627,8 +792,15 @@ describe('version materialization', function () {
       describe('with pattern a ?p ?o at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('a', '?p', '?o',
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('a', '?p', '?o')
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -663,8 +835,15 @@ describe('version materialization', function () {
       describe('with pattern a ?p ?o at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -705,8 +884,15 @@ describe('version materialization', function () {
       describe('with pattern a ?p ?o at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -744,8 +930,15 @@ describe('version materialization', function () {
       describe('with pattern null b null at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'b', null,
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'b', null)
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -777,8 +970,15 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'b', null, { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'b', null, { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -813,8 +1013,15 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'b', null, { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'b', null, { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -846,8 +1053,15 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null,
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null)
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with no matches', function () {
@@ -867,8 +1081,15 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with no matches', function () {
@@ -888,8 +1109,15 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with no matches', function () {
@@ -909,8 +1137,15 @@ describe('version materialization', function () {
       describe('with pattern null null "a"^^http://example.org/literal at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal',
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal')
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -933,8 +1168,15 @@ describe('version materialization', function () {
       describe('with pattern null null "a"^^http://example.org/literal at version 0', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 0 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 0 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -957,8 +1199,15 @@ describe('version materialization', function () {
       describe('with pattern null null "a"^^http://example.org/literal at version 1', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 1 },
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 1 })
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -981,8 +1230,15 @@ describe('version materialization', function () {
       describe('with pattern null null f at the latest version', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
-          document.searchTriplesVersionMaterialized(null, null, 'f',
-            function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+          document.searchTriplesVersionMaterialized(null, null, 'f')
+            .then(([t, tc, e]) => {
+              triples = t;
+              totalCount = tc;
+              hasExactCount = e;
+              done();
+            }).catch((error) => {
+              done(error);
+            });
         });
 
         it('should return an array with matches', function () {
@@ -1006,8 +1262,15 @@ describe('version materialization', function () {
     describe('with pattern null null f at version 0', function () {
       var triples, totalCount, hasExactCount;
       before(function (done) {
-        document.searchTriplesVersionMaterialized(null, null, 'f', { version: 0 },
-          function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+        document.searchTriplesVersionMaterialized(null, null, 'f', { version: 0 })
+          .then(([t, tc, e]) => {
+            triples = t;
+            totalCount = tc;
+            hasExactCount = e;
+            done();
+          }).catch((error) => {
+            done(error);
+          });
       });
 
       it('should return an array with matches', function () {
@@ -1030,8 +1293,15 @@ describe('version materialization', function () {
     describe('with pattern null null f at version 1', function () {
       var triples, totalCount, hasExactCount;
       before(function (done) {
-        document.searchTriplesVersionMaterialized(null, null, 'f', { version: 1 },
-          function (error, t, c, e) { triples = t; totalCount = c; hasExactCount = e; done(error); });
+        document.searchTriplesVersionMaterialized(null, null, 'f', { version: 1 })
+          .then(([t, tc, e]) => {
+            triples = t;
+            totalCount = tc;
+            hasExactCount = e;
+            done();
+          }).catch((error) => {
+            done(error);
+          });
       });
 
       it('should return an array with matches', function () {
