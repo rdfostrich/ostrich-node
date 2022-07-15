@@ -77,14 +77,15 @@ class CreateWorker : public Nan::AsyncWorker {
   string path;
   Controller* controller;
   bool read_only;
+  SnapshotCreationStrategy* strategy;
 
 public:
-  CreateWorker(const char* path, bool read_only, Nan::Callback *callback)
-    : Nan::AsyncWorker(callback), path(path), read_only(read_only), controller(NULL) { };
+  CreateWorker(const char* path, bool read_only, std::string strategy_name, std::string strategy_parameter, Nan::Callback *callback)
+    : Nan::AsyncWorker(callback), path(path), read_only(read_only), controller(NULL), strategy(SnapshotCreationStrategy::get_composite_strategy(strategy_name, strategy_parameter)) { };
 
   void Execute() override {
     try {
-      controller = new Controller(path, HashDB::TCOMPRESS, read_only);
+      controller = new Controller(path, strategy, HashDB::TCOMPRESS, read_only);
     }
     catch (const std::invalid_argument& error) { SetErrorMessage(error.what()); }
   }
@@ -105,10 +106,12 @@ public:
 // Creates a new instance of OstrichStore.
 // JavaScript signature: createOstrichStore(path, readOnly, callback)
 NAN_METHOD(OstrichStore::Create) {
-  assert(info.Length() == 2);
+  assert(info.Length() == 4);
   Nan::AsyncQueueWorker(new CreateWorker(*Nan::Utf8String(info[0]),
                                          info[1]->BooleanValue(info.GetIsolate()),
-                                         new Nan::Callback(info[2].As<Function>())));
+                                         *Nan::Utf8String(info[2]),
+                                         *Nan::Utf8String(info[3]),
+                                         new Nan::Callback(info[4].As<Function>())));
 }
 
 

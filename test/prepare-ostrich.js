@@ -101,58 +101,20 @@ const dataV3 = [{ subject: 'z', predicate: 'z', object: 'z', addition: false },
 module.exports = {
 
   initializeThreeVersions: async function () {
-    const ostrichStore = await new Promise((resolve, reject) => ostrich.fromPath('./test/test.ostrich', false, (error, ostrichStore) => {
-      if (error) return reject(error);
-      else resolve(ostrichStore);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(0, dataV0, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(1, dataV1, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(2, dataV2, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
+    const ostrichStore = await ostrich.fromPath('./test/test.ostrich', false);
+    await ostrichStore.append(0, dataV0);
+    await ostrichStore.append(1, dataV1);
+    await ostrichStore.append(2, dataV2);
     return ostrichStore;
   },
 
   initializeFourVersions: async function () {
-    const ostrichStore = await new Promise((resolve, reject) => ostrich.fromPath('./test/test.ostrich', false, (error, ostrichStore) => {
-      if (error) return reject(error);
-      else resolve(ostrichStore);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(0, dataV0, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(1, dataV1, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(2, dataV2, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
-    await new Promise((resolve, reject) => ostrichStore.append(3, dataV3, (error, insertedCount) => {
-      if (error) return reject(error);
-      else resolve(insertedCount);
-    }));
+    const ostrichStore = await ostrich.fromPath('./test/test.ostrich', false, 'interval', '2');
+    await ostrichStore.append(0, dataV0);
+    await ostrichStore.append(1, dataV1);
+    await ostrichStore.append(2, dataV2);
+    await ostrichStore.append(3, dataV3);
     return ostrichStore;
-  },
-
-  close: async function (ostrichStore) {
-    function closeOstrich(ostrichStore) {
-      return new Promise((resolve) => {
-        ostrichStore.close(() => {
-          resolve('Closed');
-        });
-      });
-    }
-    await closeOstrich(ostrichStore);
   },
 
   cleanUp: function () {
@@ -164,7 +126,7 @@ module.exports = {
   },
 
   closeAndCleanUp: async function (ostrichStore) {
-    await this.close(ostrichStore);
+    await ostrichStore.close();
     this.cleanUp();
   },
 
