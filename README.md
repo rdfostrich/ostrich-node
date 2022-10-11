@@ -10,6 +10,7 @@ This `ostrich-bindings` package for Node.js provides C++ bindings to enable quer
 ## Usage
 
 OSTRICH requires ZLib, Kyoto Cabinet and CMake (compilation only) to be installed.
+See `install-kc-ci.sh` on how to install Kyoto Cabinet.
 
 ### Importing the library
 Install the library by adding `ostrich-bindings` to your `package.json` or executing
@@ -193,17 +194,15 @@ ostrich dataset.ostrich --qv '?s ?p ?o' -o 200 -l 100 -f turtle
 ## Build manually
 To build the module from source, follow these instructions:
 ```Shell
-git clone https://git.datasciencelab.ugent.be/linked-data-fragments/Ostrich-Node
+git clone --recurse-submodules https://git.datasciencelab.ugent.be/linked-data-fragments/Ostrich-Node
 cd Ostrich-Node
-git submodule init
-git submodule update
-npm install
-npm test
+yarn install
+yarn run test
 ```
 
 If you make changes to the source, do the following to rebuild:
 ```bash
-npm install && npm test
+yarn install && yarn run test
 ```
 
 ## License
