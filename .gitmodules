@@ -1,3 +1,4 @@
 [submodule "deps/ostrich"]
 	path = deps/ostrich
-	url = https://github.com/opelgrin/ostrich.git
+    url = https://github.com/rdfostrich/ostrich.git
+    branch = feat/olivier
