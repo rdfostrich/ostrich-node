@@ -444,8 +444,12 @@ export function fromPath(
 
     // eslint-disable-next-line no-sync
     if (!readOnly && !fs.existsSync(path)) {
-      // eslint-disable-next-line no-sync
-      fs.mkdirSync(path);
+      try {
+        // eslint-disable-next-line no-sync
+        fs.mkdirSync(path);
+      } catch (error: unknown) {
+        throw new Error(`Unable to create new OSTRICH store at '${path}': ${(<Error> error).message}`);
+      }
     }
 
     // Construct the native OstrichStore

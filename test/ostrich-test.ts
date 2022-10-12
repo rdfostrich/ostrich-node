@@ -17,7 +17,7 @@ describe('ostrich', () => {
     describe('with a non-ostrich file as argument', () => {
       it('should throw an error', async() => {
         await expect(fromPath('./test/ostrich-test.ts'))
-          .rejects.toThrow('ENOTDIR: not a directory, mkdir \'./test/ostrich-test.ts/\'');
+          .rejects.toThrow('Unable to create new OSTRICH store at \'./test/ostrich-test.ts/\'');
       });
     });
 
