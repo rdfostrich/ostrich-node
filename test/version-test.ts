@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import type { ITripleRaw, OstrichStore } from '../lib/ostrich';
+import { fromPath } from '../lib/ostrich';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
 
 // eslint-disable-next-line multiline-comment-style
@@ -22,6 +23,52 @@ import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ost
  */
 
 describe('version', () => {
+  describe('An ostrich store for an example ostrich path that will cause errors', () => {
+    let document: OstrichStore;
+
+    it('should throw when the store is closed', async() => {
+      cleanUp('vq');
+      document = await initializeThreeVersions('vq');
+      await document.close();
+
+      await expect(document.searchTriplesVersion(null, null, null))
+        .rejects.toThrow('Attempted to query a closed OSTRICH store');
+
+      await closeAndCleanUp(document, 'vq');
+    });
+
+    it('should throw when the store has no versions', async() => {
+      cleanUp('vq');
+      document = await fromPath(`./test/test-vq.ostrich`, false);
+
+      await expect(document.searchTriplesVersion(null, null, null))
+        .rejects.toThrow('Attempted to query an OSTRICH store without versions');
+
+      await closeAndCleanUp(document, 'vq');
+    });
+
+    it('should throw when an internal error is thrown', async() => {
+      cleanUp('vq');
+      document = await initializeThreeVersions('vq');
+
+      jest
+        .spyOn((<any> document), '_searchTriplesVersion')
+        .mockImplementation((
+          subject,
+          predicate,
+          object,
+          offset,
+          limit,
+          cb: any,
+        ) => cb(new Error('Internal error')));
+
+      await expect(document.searchTriplesVersion(null, null, null))
+        .rejects.toThrow('Internal error');
+
+      await closeAndCleanUp(document, 'vq');
+    });
+  });
+
   describe('An ostrich store for an example ostrich path', () => {
     let document: OstrichStore;
     beforeAll(async() => {

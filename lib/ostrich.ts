@@ -103,10 +103,10 @@ OstrichStorePrototype.searchTriplesVersionMaterialized = function(
 ): Promise<{ triples: ITripleRaw[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
-      reject(new Error('Ostrich cannot be read because it is closed'));
+      return reject(new Error('Attempted to query a closed OSTRICH store'));
     }
     if (this.maxVersion < 0) {
-      reject(new Error('An empty store can not be queried.'));
+      return reject(new Error('Attempted to query an OSTRICH store without versions'));
     }
     if (typeof subject !== 'string' || subject.startsWith('?')) {
       subject = '';
@@ -132,7 +132,7 @@ OstrichStorePrototype.searchTriplesVersionMaterialized = function(
         this._operations--;
         this._finishOperation();
         if (error) {
-          reject(error);
+          return reject(error);
         }
         resolve({ triples, totalCount, hasExactCount });
       },
@@ -148,19 +148,15 @@ OstrichStorePrototype.searchTriplesVersionMaterialized = function(
  * @param object An RDF term.
  * @param version The version to obtain.
  */
-OstrichStorePrototype.countTriplesVersionMaterialized = function(
+OstrichStorePrototype.countTriplesVersionMaterialized = async function(
   subject: string | undefined | null,
   predicate: string | undefined | null,
   object: string | undefined | null,
   version = -1,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-  return new Promise((resolve, reject) => {
-    (<OstrichStore> this).searchTriplesVersionMaterialized(subject, predicate, object, { version, offset: 0, limit: 1 })
-      .then(({ totalCount, hasExactCount }) => {
-        resolve({ totalCount, hasExactCount });
-      })
-      .catch((error: Error) => reject(error));
-  });
+  const { totalCount, hasExactCount } = await (<OstrichStore> this)
+    .searchTriplesVersionMaterialized(subject, predicate, object, { version, offset: 0, limit: 1 });
+  return { totalCount, hasExactCount };
 };
 
 /**
@@ -175,14 +171,14 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
   subject: string | undefined | null,
   predicate: string | undefined | null,
   object: string | undefined | null,
-  options?: { offset?: number; limit?: number; versionStart?: number; versionEnd?: number },
+  options: { offset?: number; limit?: number; versionStart: number; versionEnd: number },
 ): Promise<{ triples: ITripleDeltaRaw[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
-      reject(new Error('Ostrich cannot be read because it is closed'));
+      return reject(new Error('Attempted to query a closed OSTRICH store'));
     }
     if (this.maxVersion < 0) {
-      reject(new Error('An empty store can not be queried.'));
+      return reject(new Error('Attempted to query an OSTRICH store without versions'));
     }
     if (typeof subject !== 'string' || subject.startsWith('?')) {
       subject = '';
@@ -193,21 +189,15 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
     if (typeof object !== 'string' || object.startsWith('?')) {
       object = '';
     }
-    const offset = options && options.offset ? Math.max(0, options.offset) : 0;
-    const limit = options && options.limit ? Math.max(0, options.limit) : 0;
-    const versionStart = options?.versionStart;
-    const versionEnd = options?.versionEnd;
-    if (versionStart === undefined) {
-      return reject(new Error('A `versionStart` option must be defined.'));
-    }
-    if (versionEnd === undefined) {
-      return reject(new Error('A `versionEnd` option must be defined.'));
-    }
+    const offset = options.offset ? Math.max(0, options.offset) : 0;
+    const limit = options.limit ? Math.max(0, options.limit) : 0;
+    const versionStart = options.versionStart;
+    const versionEnd = options.versionEnd;
     if (versionStart >= versionEnd) {
-      return reject(new Error('`versionStart` must be strictly smaller than `versionEnd`.'));
+      return reject(new Error(`'versionStart' must be strictly smaller than 'versionEnd'`));
     }
     if (versionEnd > this.maxVersion) {
-      return reject(new Error('`versionEnd` can not be larger than the maximum version.'));
+      return reject(new Error(`'versionEnd' can not be larger than the maximum version (${this.maxVersion})`));
     }
     this._operations++;
     this._searchTriplesDeltaMaterialized(
@@ -222,7 +212,7 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
         this._operations--;
         this._finishOperation();
         if (error) {
-          reject(error);
+          return reject(error);
         }
         resolve({ triples, totalCount, hasExactCount });
       },
@@ -239,25 +229,20 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
  * @param versionStart The initial version.
  * @param versionEnd The final version.
  */
-OstrichStorePrototype.countTriplesDeltaMaterialized = function(
+OstrichStorePrototype.countTriplesDeltaMaterialized = async function(
   subject: string | undefined | null,
   predicate: string | undefined | null,
   object: string | undefined | null,
   versionStart: number,
   versionEnd: number,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-  return new Promise((resolve, reject) => {
-    (<OstrichStore> this).searchTriplesDeltaMaterialized(
-      subject,
-      predicate,
-      object,
-      { offset: 0, limit: 1, versionStart, versionEnd },
-    )
-      .then(({ totalCount, hasExactCount }) => {
-        resolve({ totalCount, hasExactCount });
-      })
-      .catch((error: Error) => reject(error));
-  });
+  const { totalCount, hasExactCount } = await (<OstrichStore> this).searchTriplesDeltaMaterialized(
+    subject,
+    predicate,
+    object,
+    { offset: 0, limit: 1, versionStart, versionEnd },
+  );
+  return { totalCount, hasExactCount };
 };
 
 /**
@@ -275,10 +260,10 @@ OstrichStorePrototype.searchTriplesVersion = function(
 ): Promise<{ triples: ITripleVersionRaw[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
-      reject(new Error('Ostrich cannot be read because it is closed'));
+      return reject(new Error('Attempted to query a closed OSTRICH store'));
     }
     if (this.maxVersion < 0) {
-      reject(new Error('An empty store can not be queried.'));
+      return reject(new Error('Attempted to query an OSTRICH store without versions'));
     }
     if (typeof subject !== 'string' || subject.startsWith('?')) {
       subject = '';
@@ -303,7 +288,7 @@ OstrichStorePrototype.searchTriplesVersion = function(
         this._operations--;
         this._finishOperation();
         if (error) {
-          reject(error);
+          return reject(error);
         }
         resolve({ triples, totalCount, hasExactCount });
       },
@@ -317,18 +302,14 @@ OstrichStorePrototype.searchTriplesVersion = function(
  * @param predicate An RDF term.
  * @param object An RDF term.
  */
-OstrichStorePrototype.countTriplesVersion = function(
+OstrichStorePrototype.countTriplesVersion = async function(
   subject: string | undefined | null,
   predicate: string | undefined | null,
   object: string | undefined | null,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-  return new Promise((resolve, reject) => {
-    (<OstrichStore> this).searchTriplesVersion(subject, predicate, object, { offset: 0, limit: 1 })
-      .then(({ totalCount, hasExactCount }) => {
-        resolve({ totalCount, hasExactCount });
-      })
-      .catch((error: Error) => reject(error));
-  });
+  const { totalCount, hasExactCount } = await (<OstrichStore> this)
+    .searchTriplesVersion(subject, predicate, object, { offset: 0, limit: 1 });
+  return { totalCount, hasExactCount };
 };
 
 /**
@@ -362,18 +343,21 @@ OstrichStorePrototype.append = function(triples: ITripleDeltaRaw[], version = -1
 OstrichStorePrototype.appendSorted = function(triples: ITripleDeltaRaw[], version = -1): Promise<number> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
-      reject(new Error('Ostrich cannot be read because it is closed'));
+      return reject(new Error('Attempted to append to a closed OSTRICH store'));
     }
     if (this.readOnly) {
-      reject(new Error('Can not append to Ostrich store in read-only mode'));
+      return reject(new Error('Attempted to append to an OSTRICH store in read-only mode'));
     }
 
     this._operations++;
+    if (version === -1) {
+      version = (<number> this.maxVersion) + 1;
+    }
     this._append(version, triples, (error: Error, insertedCount: number) => {
       this._operations--;
       this._finishOperation();
       if (error) {
-        reject(error);
+        return reject(error);
       }
       resolve(insertedCount);
     });
@@ -419,7 +403,7 @@ OstrichStorePrototype._closeInternal = function(remove: boolean, callback: (erro
   }
 
   function onClosed(error?: Error): void {
-    self._isClosingCallbacks?.forEach((cb: (error?: Error) => void) => cb(error));
+    self._isClosingCallbacks!.forEach((cb: (error?: Error) => void) => cb(error));
     delete self._isClosingCallbacks;
   }
 

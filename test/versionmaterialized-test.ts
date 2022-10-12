@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import type { ITripleRaw, OstrichStore } from '../lib/ostrich';
+import { fromPath } from '../lib/ostrich';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
 
 // eslint-disable-next-line multiline-comment-style
@@ -39,6 +40,53 @@ import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ost
  */
 
 describe('version materialization', () => {
+  describe('An ostrich store for an example ostrich path that will cause errors', () => {
+    let document: OstrichStore;
+
+    it('should throw when the store is closed', async() => {
+      cleanUp('vm');
+      document = await initializeThreeVersions('vm');
+      await document.close();
+
+      await expect(document.searchTriplesVersionMaterialized(null, null, null))
+        .rejects.toThrow('Attempted to query a closed OSTRICH store');
+
+      await closeAndCleanUp(document, 'vm');
+    });
+
+    it('should throw when the store has no versions', async() => {
+      cleanUp('vm');
+      document = await fromPath(`./test/test-vm.ostrich`, false);
+
+      await expect(document.searchTriplesVersionMaterialized(null, null, null))
+        .rejects.toThrow('Attempted to query an OSTRICH store without versions');
+
+      await closeAndCleanUp(document, 'vm');
+    });
+
+    it('should throw when an internal error is thrown', async() => {
+      cleanUp('vm');
+      document = await initializeThreeVersions('vm');
+
+      jest
+        .spyOn((<any> document), '_searchTriplesVersionMaterialized')
+        .mockImplementation((
+          subject,
+          predicate,
+          object,
+          offset,
+          limit,
+          version,
+          cb: any,
+        ) => cb(new Error('Internal error')));
+
+      await expect(document.searchTriplesVersionMaterialized(null, null, null))
+        .rejects.toThrow('Internal error');
+
+      await closeAndCleanUp(document, 'vm');
+    });
+  });
+
   describe('An ostrich store for an example ostrich path', () => {
     let document: OstrichStore;
     beforeAll(async() => {

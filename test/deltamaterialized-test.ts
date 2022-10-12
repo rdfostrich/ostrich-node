@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import type { ITripleRaw, OstrichStore } from '../lib/ostrich';
+import { fromPath } from '../lib/ostrich';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
 
 // eslint-disable-next-line multiline-comment-style
@@ -33,6 +34,74 @@ import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ost
 */
 
 describe('delta materialization', () => {
+  describe('An ostrich store for an example ostrich path that will cause errors', () => {
+    let document: OstrichStore;
+
+    it('should throw when the store is closed', async() => {
+      cleanUp('dm');
+      document = await initializeThreeVersions('dm');
+      await document.close();
+
+      await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }))
+        .rejects.toThrow('Attempted to query a closed OSTRICH store');
+
+      await closeAndCleanUp(document, 'dm');
+    });
+
+    it('should throw when the store has no versions', async() => {
+      cleanUp('dm');
+      document = await fromPath(`./test/test-dm.ostrich`, false);
+
+      await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }))
+        .rejects.toThrow('Attempted to query an OSTRICH store without versions');
+
+      await closeAndCleanUp(document, 'dm');
+    });
+
+    it('should throw when an internal error is thrown', async() => {
+      cleanUp('dm');
+      document = await initializeThreeVersions('dm');
+
+      jest
+        .spyOn((<any> document), '_searchTriplesDeltaMaterialized')
+        .mockImplementation((
+          subject,
+          predicate,
+          object,
+          offset,
+          limit,
+          versionStart,
+          versionEnd,
+          cb: any,
+        ) => cb(new Error('Internal error')));
+
+      await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }))
+        .rejects.toThrow('Internal error');
+
+      await closeAndCleanUp(document, 'dm');
+    });
+
+    it('should throw when start is after end', async() => {
+      cleanUp('dm');
+      document = await initializeThreeVersions('dm');
+
+      await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 2, versionEnd: 1 }))
+        .rejects.toThrow(`'versionStart' must be strictly smaller than 'versionEnd'`);
+
+      await closeAndCleanUp(document, 'dm');
+    });
+
+    it('should throw when end is after max', async() => {
+      cleanUp('vm');
+      document = await initializeThreeVersions('vm');
+
+      await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 100 }))
+        .rejects.toThrow(`'versionEnd' can not be larger than the maximum version (2)`);
+
+      await closeAndCleanUp(document, 'vm');
+    });
+  });
+
   describe('An ostrich store for an example ostrich path', () => {
     let document: OstrichStore;
     beforeAll(async() => {
