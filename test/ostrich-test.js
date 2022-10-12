@@ -14,58 +14,62 @@ describe('ostrich', function () {
   describe('creating a new ostrich document with fromPath', function () {
     describe('with a non-string argument', function () {
       it('should throw an error', function (done) {
-        var self = {};
-        ostrich.fromPath(null, function (error) {
-          this.should.equal(self);
-          error.should.be.an.Error;
-          error.message.should.equal('Invalid path: null');
-          done();
-        }, self);
+        ostrich.fromPath(null)
+          .then(() => done(new Error('An error should be thrown')))
+          .catch(error => {
+            error.should.be.an.Error;
+            error.message.should.equal('Invalid path: null');
+            done();
+          });
       });
     });
 
     describe('with a non-ostrich file as argument', function () {
       it('should throw an error', function (done) {
-        var self = {};
-        ostrich.fromPath('./test/ostrich-test.js', function (error) {
-          this.should.equal(self);
-          error.should.be.an.Error;
-          error.message.should.equal('The provided path \'./test/ostrich-test.js/\' is not a valid directory.');
-          done();
-        }, self);
+        ostrich.fromPath('./test/ostrich-test.js')
+          .then(() => done(new Error('An error should be thrown')))
+          .catch(error => {
+            error.should.be.an.Error;
+            error.message.should.equal('ENOTDIR: not a directory, mkdir \'./test/ostrich-test.js/\'');
+            done();
+          })
+          .catch(done);
       });
     });
 
-    describe('with a self value', function () {
-      it('should invoke the callback with that value as `this`', function (done) {
-        var self = {};
-        ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-          this.should.equal(self);
-          ostrichStore.close();
-          done(error);
-        }, self);
+    describe('with a valid file', function () {
+      it('should be closeable', function (done) {
+        ostrich.fromPath('./test/test.ostrich')
+          .then((ostrichStore) => {
+            return ostrichStore.close()
+              .then(done)
+              .catch(done);
+          })
+          .catch(done);
       });
     });
 
-    describe('with a self value', function () {
+    describe('with 3 versions', function () {
       before(function (done) {
         prepare.cleanUp();
-        prepare.initializeThreeVersions().then((ostrichStore) => {
-          prepare.close(ostrichStore).then(done());
-        });
+        prepare.initializeThreeVersions()
+          .then(ostrichStore => ostrichStore.close())
+          .then(done)
+          .catch(done);
       });
       after(function (done) {
         prepare.cleanUp();
         done();
       });
       it('should invoke the callback with that value as `this`', function (done) {
-        var self = {};
-        ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-          var maxVersion = ostrichStore.maxVersion;
-          maxVersion.should.equal(2);
-          ostrichStore.close();
-          done(error);
-        }, self);
+        ostrich.fromPath('./test/test.ostrich')
+          .then(ostrichStore => {
+            var maxVersion = ostrichStore.maxVersion;
+            maxVersion.should.equal(2);
+            ostrichStore.close();
+            done();
+          })
+          .catch(done);
       });
     });
   });

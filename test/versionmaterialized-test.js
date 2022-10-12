@@ -64,37 +64,14 @@ describe('version materialization', function () {
       it('should support countTriplesVersionMaterialized', function () {
         document.features.countTriplesVersionMaterialized.should.be.true;
       });
-
-      /* it('should not support searchLiterals', function () {
-       document.features.searchLiterals.should.be.false;
-       });*/
     });
 
     describe('being searched', function () {
-      // describe('without self value', function () {
-      //   it('should invoke the callback with the ostrich document as `this`', function (done) {
-      //     document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-      //       this.should.equal(document);
-      //       done(error);
-      //     });
-      //   });
-      // });
-
-      // describe('with a self value', function () {
-      //   var self = {};
-      //   it('should invoke the callback with that value as `this`', function (done) {
-      //     document.searchTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-      //       this.should.equal(self);
-      //       done(error);
-      //     }, self);
-      //   });
-      // });
-
       describe('with a non-existing pattern at the latest version', function () {
         var triples, totalCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('1', null, null)
-            .then(([t, tc]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount }) => {
               triples = t;
               totalCount = tc;
               done();
@@ -117,7 +94,7 @@ describe('version materialization', function () {
         var triples, totalCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('1', null, null, { version: 0 })
-            .then(([t, tc]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount }) => {
               triples = t;
               totalCount = tc;
               done();
@@ -140,7 +117,7 @@ describe('version materialization', function () {
         var triples, totalCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('1', null, null, { version: 1 })
-            .then(([t, tc]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount }) => {
               triples = t;
               totalCount = tc;
               done();
@@ -163,7 +140,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null)
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -194,7 +171,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -225,7 +202,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -256,7 +233,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { offset: 0, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -287,7 +264,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version:0, offset: 0, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -318,7 +295,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 0, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -349,7 +326,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { offset: 2, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -380,7 +357,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 2, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -411,7 +388,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 2, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -442,7 +419,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { offset: 10, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -470,7 +447,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 0, offset: 10, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -498,7 +475,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, null, { version: 1, offset: 10, limit: 5 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -526,7 +503,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('f', null, null)
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -557,7 +534,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('f', null, null, { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -585,7 +562,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('f', null, null, { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -616,7 +593,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { offset: 0, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -647,7 +624,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 0, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -678,7 +655,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 0, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -709,7 +686,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { offset: 10, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -737,7 +714,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { version: 0, offset: 10, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -765,7 +742,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('c', null, null, { version: 1, offset: 10, limit: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -793,7 +770,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('a', '?p', '?o')
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -836,7 +813,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -885,7 +862,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized('a', '?p', '?o', { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -931,7 +908,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'b', null)
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -971,7 +948,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'b', null, { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1014,7 +991,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'b', null, { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1054,7 +1031,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null)
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1082,7 +1059,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1110,7 +1087,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, 'http://example.org/p3', null, { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1138,7 +1115,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal')
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1169,7 +1146,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 0 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1200,7 +1177,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal', { version: 1 })
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1231,7 +1208,7 @@ describe('version materialization', function () {
         var triples, totalCount, hasExactCount;
         before(function (done) {
           document.searchTriplesVersionMaterialized(null, null, 'f')
-            .then(([t, tc, e]) => {
+            .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
               triples = t;
               totalCount = tc;
               hasExactCount = e;
@@ -1263,7 +1240,7 @@ describe('version materialization', function () {
       var triples, totalCount, hasExactCount;
       before(function (done) {
         document.searchTriplesVersionMaterialized(null, null, 'f', { version: 0 })
-          .then(([t, tc, e]) => {
+          .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
             triples = t;
             totalCount = tc;
             hasExactCount = e;
@@ -1294,7 +1271,7 @@ describe('version materialization', function () {
       var triples, totalCount, hasExactCount;
       before(function (done) {
         document.searchTriplesVersionMaterialized(null, null, 'f', { version: 1 })
-          .then(([t, tc, e]) => {
+          .then(({ triples: t, totalCount: tc, hasExactCount: e }) => {
             triples = t;
             totalCount = tc;
             hasExactCount = e;
@@ -1325,30 +1302,16 @@ describe('version materialization', function () {
     });
 
     describe('being counted', function () {
-      describe('without self value', function () {
-        it('should invoke the callback with the ostrich document as `this`', function (done) {
-          document.countTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-            this.should.equal(document);
-            done(error);
-          });
-        });
-      });
-
-      describe('with a self value', function () {
-        var self = {};
-        it('should invoke the callback with that value as `this`', function (done) {
-          document.countTriplesVersionMaterialized('a', 'b', 'c', function (error) {
-            this.should.equal(self);
-            done(error);
-          }, self);
-        });
-      });
-
       describe('with a non-existing pattern at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('1', null, null,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('1', null, null)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1363,8 +1326,13 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('q', null, null, 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('q', null, null, 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1379,8 +1347,13 @@ describe('version materialization', function () {
       describe('with a non-existing pattern at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('q', null, null, 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('q', null, null, 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1395,8 +1368,13 @@ describe('version materialization', function () {
       describe('with pattern null null null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, null,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, null)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 10', function () {
@@ -1411,8 +1389,13 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, null, 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, null, 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 8', function () {
@@ -1427,8 +1410,13 @@ describe('version materialization', function () {
       describe('with pattern null null null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, null, 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, null, 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 9', function () {
@@ -1443,8 +1431,13 @@ describe('version materialization', function () {
       describe('with pattern a null null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('a', null, null,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('a', null, null)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 5', function () {
@@ -1459,8 +1452,13 @@ describe('version materialization', function () {
       describe('with pattern a null null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('a', null, null, 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('a', null, null, 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 7', function () {
@@ -1475,8 +1473,13 @@ describe('version materialization', function () {
       describe('with pattern a null null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized('a', null, null, 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized('a', null, null, 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 6', function () {
@@ -1491,8 +1494,13 @@ describe('version materialization', function () {
       describe('with pattern null b null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'b', null,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'b', null)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 4', function () {
@@ -1507,8 +1515,13 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'b', null, 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'b', null, 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 5', function () {
@@ -1523,8 +1536,13 @@ describe('version materialization', function () {
       describe('with pattern null b null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'b', null, 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'b', null, 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 4', function () {
@@ -1539,8 +1557,13 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1555,8 +1578,13 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1571,8 +1599,13 @@ describe('version materialization', function () {
       describe('with pattern null ex:p3 null at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, 'http://example.org/p3', null, 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 0', function () {
@@ -1587,8 +1620,13 @@ describe('version materialization', function () {
       describe('with pattern null null f at the latest version', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, 'f',
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, 'f')
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 1', function () {
@@ -1603,8 +1641,13 @@ describe('version materialization', function () {
       describe('with pattern null null f at version 0', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, 'f', 0,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, 'f', 0)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 1', function () {
@@ -1619,8 +1662,13 @@ describe('version materialization', function () {
       describe('with pattern null null f at version 1', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, 'f', 1,
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, 'f', 1)
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 2', function () {
@@ -1635,8 +1683,13 @@ describe('version materialization', function () {
       describe('with pattern null null "a"^^http://example.org/literal', function () {
         var totalCount, hasExactCount;
         before(function (done) {
-          document.countTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal',
-            function (error, c, e) { totalCount = c; hasExactCount = e; done(error); });
+          document.countTriplesVersionMaterialized(null, null, '"a"^^http://example.org/literal')
+            .then(({ totalCount: c, hasExactCount: e }) => {
+              totalCount = c;
+              hasExactCount = e;
+              done();
+            })
+            .catch(done);
         });
 
         it('should return 1', function () {
@@ -1646,25 +1699,6 @@ describe('version materialization', function () {
         it('should be an exact count', function () {
           hasExactCount.should.equal(true);
         });
-      });
-    });
-
-    describe('being closed', function () {
-      var self = {}, callbackThis, callbackArgs;
-      before(function (done) {
-        document.close(function (error) {
-          callbackThis = this, callbackArgs = arguments;
-          done(error);
-        }, self);
-      });
-
-      it('should not pass an error through the callback', function () {
-        callbackArgs.should.have.length(1);
-        callbackArgs.should.have.property(0, null);
-      });
-
-      it('should invoke the callback with the second argument as `this`', function () {
-        callbackThis.should.equal(self);
       });
     });
   });
