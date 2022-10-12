@@ -1,8 +1,10 @@
+import type { OstrichStore } from '../lib/ostrich';
+
 const fs = require('fs');
 const path = require('path');
 const ostrich = require('../lib/ostrich');
 
-
+// eslint-disable-next-line multiline-comment-style
 /*
 0:
  <a> <a> "a"^^<http://example.org/literal> .
@@ -48,7 +50,6 @@ const ostrich = require('../lib/ostrich');
  <q> <q> <q> .
  <r> <r> <r> .
  <z> <z> "z"^^<http://example.org/literal> .
-
 
 0 -> 1:
  - <a> <a> "b"^^<http://example.org/literal> .
@@ -97,37 +98,34 @@ const dataV2 = [{ subject: 'a', predicate: 'a', object: '"z"^^<http://example.or
 const dataV3 = [{ subject: 'z', predicate: 'z', object: 'z', addition: false },
   { subject: 'z', predicate: 'z', object: '"z"^^<http://example.org/literal>', addition: true }];
 
+export async function initializeThreeVersions(tag: string): Promise<OstrichStore> {
+  const ostrichStore = await ostrich.fromPath(`./test/test-${tag}.ostrich`, false);
+  await ostrichStore.append(dataV0, 0);
+  await ostrichStore.append(dataV1, 1);
+  await ostrichStore.append(dataV2, 2);
+  return ostrichStore;
+}
 
-module.exports = {
+export async function initializeFourVersions(): Promise<OstrichStore> {
+  const ostrichStore = await ostrich.fromPath('./test/test.ostrich', false, 'interval', '2');
+  await ostrichStore.append(dataV0, 0);
+  await ostrichStore.append(dataV1, 1);
+  await ostrichStore.append(dataV2, 2);
+  await ostrichStore.append(dataV3, 3);
+  return ostrichStore;
+}
 
-  initializeThreeVersions: async function () {
-    const ostrichStore = await ostrich.fromPath('./test/test.ostrich', false);
-    await ostrichStore.append(0, dataV0);
-    await ostrichStore.append(1, dataV1);
-    await ostrichStore.append(2, dataV2);
-    return ostrichStore;
-  },
-
-  initializeFourVersions: async function () {
-    const ostrichStore = await ostrich.fromPath('./test/test.ostrich', false, 'interval', '2');
-    await ostrichStore.append(0, dataV0);
-    await ostrichStore.append(1, dataV1);
-    await ostrichStore.append(2, dataV2);
-    await ostrichStore.append(3, dataV3);
-    return ostrichStore;
-  },
-
-  cleanUp: function () {
-    if (fs.existsSync('./test/test.ostrich/')) {
-      const files = fs.readdirSync('./test/test.ostrich/');
-      for (const file of files)
-        fs.unlinkSync(path.join('./test/test.ostrich/', file));
+export function cleanUp(tag: string): void {
+  const name = `./test/test-${tag}.ostrich`;
+  if (fs.existsSync(name)) {
+    const files = fs.readdirSync(name);
+    for (const file of files) {
+      fs.unlinkSync(path.join(name, file));
     }
-  },
+  }
+}
 
-  closeAndCleanUp: async function (ostrichStore) {
-    await ostrichStore.close();
-    this.cleanUp();
-  },
-
-};
+export async function closeAndCleanUp(ostrichStore: OstrichStore, tag: string): Promise<void> {
+  await ostrichStore.close();
+  cleanUp(tag);
+}

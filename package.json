@@ -1,8 +1,8 @@
 {
   "name": "ostrich-bindings",
   "version": "1.2.3",
-  "description": "Native bindings to access OSTRICH RDF triple archive.",
-  "author": "Ruben Taelman <rubensworks@gmail.com>, Miel Vander Sande <miel.vandersande@ugent.be>",
+  "description": "Native bindings to access OSTRICH RDF triple archives",
+  "author": "Ruben Taelman <rubensworks@gmail.com>, Miel Vander Sande <miel.vandersande@ugent.be>, Olivier Pelgrin <olivier@cs.aau.dk>",
   "keywords": [
     "turtle",
     "rdf",
@@ -14,7 +14,8 @@
     "semanticweb"
   ],
   "license": "MIT",
-  "main": "./lib/ostrich",
+  "main": "lib/ostrich.ts",
+  "typings": "./lib/ostrich",
   "bin": {
     "ostrich": "./bin/ostrich"
   },
@@ -26,25 +27,37 @@
     "url": "https://github.com/rdfostrich/ostrich-node/issues"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=12.0"
   },
   "files": [
-    "bin",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "bin/**/*.js.map",
     "deps/ostrich/src/main/cpp",
     "deps/ostrich/deps/hdt/hdt-lib/include",
     "deps/ostrich/deps/hdt/hdt-lib/src",
     "deps/ostrich/deps/hdt/hdt-lib/third",
     "deps/ostrich/ext/hunter",
     "CMakeLists.txt",
-    "lib"
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map",
+    "lib/**/*.cc",
+    "lib/**/*.h"
   ],
   "scripts": {
-    "test": "rm test/*.hdt.index 2> /dev/null; mocha",
-    "lint": "eslint lib/*.js test/*.js bin/*",
+    "test": "rm test/*.hdt.index 2> /dev/null; jest ${1}",
+    "test-watch": "jest ${1} --watch",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "lint": "eslint . --ext .ts --cache",
+    "build": "tsc",
     "validate": "npm ls",
+    "prepare": "npm run build",
+    "version": "manual-git-changelog onversion",
     "install": "cmake-js compile"
   },
   "dependencies": {
+    "@types/n3": "^1.10.4",
     "boost-lib": "^0.11.3",
     "cmake-js": "^6.3.2",
     "minimist": "^1.2.6",
@@ -52,14 +65,53 @@
     "nan": "^2.16.0"
   },
   "devDependencies": {
-    "eslint": "^8.17.0",
-    "lodash": "^4.17.21",
-    "mocha": "^10.0.0",
-    "precommit-hook": "^3.0.0",
-    "should": "^13.2.3"
+    "@rubensworks/eslint-config": "^1.0.0",
+    "@types/jest": "^27.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "eslint-config-es": "^3.23.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "eslint-plugin-tsdoc": "^0.2.7",
+    "eslint-plugin-unused-imports": "^1.0.0",
+    "jest": "^27.0.0",
+    "jest-rdf": "^1.5.0",
+    "manual-git-changelog": "^1.0.0",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^27.0.0",
+    "typescript": "^4.0.2",
+    "lodash": "^4.17.21"
   },
   "pre-commit": [
+    "build",
     "lint",
     "test"
-  ]
+  ],
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "/test/.*-test.*.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }
 }
