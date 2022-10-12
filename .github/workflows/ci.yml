@@ -5,11 +5,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Kyoto Cabinet
-        run: sudo ./install-kc-ci.sh
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+      - name: Install Kyoto Cabinet
+        run: sudo ./install-kc-ci.sh
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
@@ -31,8 +31,6 @@ jobs:
           - 16.x
           - 18.x
     steps:
-      - name: Install Kyoto Cabinet
-        run: sudo ./install-kc-ci.sh
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
@@ -43,6 +41,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+      - name: Install Kyoto Cabinet
+        run: sudo ./install-kc-ci.sh
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
