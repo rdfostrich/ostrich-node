@@ -206,7 +206,7 @@ yarn install && yarn run test
 ```
 
 ## License
-This software is written by [Ruben Taelman](http://rubensworks.net/) and Miel Vander Sande.
+This software is written by [Ruben Taelman](http://rubensworks.net/), Miel Vander Sande, and Olivier Pelgrin.
 
 This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
 and released under the [MIT license](http://opensource.org/licenses/MIT).
