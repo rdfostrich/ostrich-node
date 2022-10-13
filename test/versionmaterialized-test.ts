@@ -1,8 +1,8 @@
 import 'jest-rdf';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { fromPath } from '../lib/OstrichStore';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
 const quad = require('rdf-quad');
 
@@ -74,7 +74,7 @@ describe('version materialization', () => {
       document = await initializeThreeVersions('vm');
 
       jest
-        .spyOn((<any> document), '_searchTriplesVersionMaterialized')
+        .spyOn(document.native, '_searchTriplesVersionMaterialized')
         .mockImplementation((
           subject,
           predicate,

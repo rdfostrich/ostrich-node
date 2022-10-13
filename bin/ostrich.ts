@@ -4,8 +4,8 @@ import { stringToTerm } from 'rdf-string';
 import { quadToStringQuad as quadToStringQuadTtl } from 'rdf-string-ttl';
 import * as yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import type { OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { fromPath } from '../lib/OstrichStore';
 const streamifyArray = require('streamify-array');
 
 (async function() {
@@ -70,11 +70,13 @@ const streamifyArray = require('streamify-array');
           alias: 's',
           type: 'number',
           describe: 'The starting version to query',
+          demandOption: true,
         },
         versionEnd: {
           alias: 'e',
           type: 'number',
           describe: 'The ending version to query',
+          demandOption: true,
         },
       }), async args => {
       await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {

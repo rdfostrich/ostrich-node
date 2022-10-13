@@ -1,6 +1,7 @@
 import 'jest-rdf';
-import type { OstrichStore } from '../lib/ostrich';
-import { fromPath, quadDelta } from '../lib/ostrich';
+import { quadDelta } from '../lib';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { fromPath } from '../lib/OstrichStore';
 const _ = require('lodash');
 const quad = require('rdf-quad');
 

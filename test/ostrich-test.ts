@@ -1,6 +1,6 @@
 import 'jest-rdf';
-import type { OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { fromPath } from '../lib/OstrichStore';
 import { cleanUp, initializeThreeVersions } from './prepare-ostrich';
 
 const ostrichNative = require('../build/Release/ostrich.node');
@@ -87,7 +87,7 @@ describe('ostrich', () => {
         document = await initializeThreeVersions('main');
 
         jest
-          .spyOn((<any> document), '_searchTriplesVersionMaterialized')
+          .spyOn(document.native, '_searchTriplesVersionMaterialized')
           .mockImplementation((
             subject,
             predicate,

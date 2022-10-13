@@ -1,10 +1,10 @@
-import type { OstrichStore } from '../lib/ostrich';
-import { quadDelta } from '../lib/ostrich';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { quadDelta } from '../lib/utils';
 
 const fs = require('fs');
 const path = require('path');
 const quad = require('rdf-quad');
-const ostrich = require('../lib/ostrich');
+const ostrich = require('../lib/OstrichStore');
 
 // eslint-disable-next-line multiline-comment-style
 /*

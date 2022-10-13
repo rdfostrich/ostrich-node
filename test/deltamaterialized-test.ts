@@ -1,8 +1,9 @@
 import 'jest-rdf';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import type { OstrichStore } from '../lib/ostrich';
-import { fromPath, quadDelta } from '../lib/ostrich';
+import { quadDelta } from '../lib';
+import type { OstrichStore } from '../lib/OstrichStore';
+import { fromPath } from '../lib/OstrichStore';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
 const quad = require('rdf-quad');
 
@@ -68,7 +69,7 @@ describe('delta materialization', () => {
       document = await initializeThreeVersions('dm');
 
       jest
-        .spyOn((<any> document), '_searchTriplesDeltaMaterialized')
+        .spyOn(document.native, '_searchTriplesDeltaMaterialized')
         .mockImplementation((
           subject,
           predicate,
