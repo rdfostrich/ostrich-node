@@ -49,7 +49,7 @@ export class OstrichStore {
     predicate: RDF.Term | undefined | null,
     object: RDF.Term | undefined | null,
     options?: { offset?: number; limit?: number; version?: number },
-  ): Promise<{ triples: RDF.Quad[]; totalCount: number; hasExactCount: boolean }> {
+  ): Promise<{ triples: RDF.Quad[]; cardinality: number; exactCardinality: boolean }> {
     return new Promise((resolve, reject) => {
       if (this.closed) {
         return reject(new Error('Attempted to query a closed OSTRICH store'));
@@ -74,7 +74,11 @@ export class OstrichStore {
           if (error) {
             return reject(error);
           }
-          resolve({ triples: triples.map(triple => stringQuadToQuad(triple)), totalCount, hasExactCount });
+          resolve({
+            triples: triples.map(triple => stringQuadToQuad(triple)),
+            cardinality: totalCount,
+            exactCardinality: hasExactCount,
+          });
         },
       );
     });
@@ -93,10 +97,10 @@ export class OstrichStore {
     predicate: RDF.Term | undefined | null,
     object: RDF.Term | undefined | null,
     version = -1,
-  ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-    const { totalCount, hasExactCount } = await this
+  ): Promise<{ cardinality: number; exactCardinality: boolean }> {
+    const { cardinality, exactCardinality } = await this
       .searchTriplesVersionMaterialized(subject, predicate, object, { version, offset: 0, limit: 1 });
-    return { totalCount, hasExactCount };
+    return { cardinality, exactCardinality };
   }
 
   /**
@@ -112,7 +116,7 @@ export class OstrichStore {
     predicate: RDF.Term | undefined | null,
     object: RDF.Term | undefined | null,
     options: { offset?: number; limit?: number; versionStart: number; versionEnd: number },
-  ): Promise<{ triples: IQuadDelta[]; totalCount: number; hasExactCount: boolean }> {
+  ): Promise<{ triples: IQuadDelta[]; cardinality: number; exactCardinality: boolean }> {
     return new Promise((resolve, reject) => {
       if (this.closed) {
         return reject(new Error('Attempted to query a closed OSTRICH store'));
@@ -151,8 +155,8 @@ export class OstrichStore {
               Object.assign(quad, { addition: triple.addition });
               return quad;
             }),
-            totalCount,
-            hasExactCount,
+            cardinality: totalCount,
+            exactCardinality: hasExactCount,
           });
         },
       );
@@ -174,14 +178,14 @@ export class OstrichStore {
     object: RDF.Term | undefined | null,
     versionStart: number,
     versionEnd: number,
-  ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-    const { totalCount, hasExactCount } = await this.searchTriplesDeltaMaterialized(
+  ): Promise<{ cardinality: number; exactCardinality: boolean }> {
+    const { cardinality, exactCardinality } = await this.searchTriplesDeltaMaterialized(
       subject,
       predicate,
       object,
       { offset: 0, limit: 1, versionStart, versionEnd },
     );
-    return { totalCount, hasExactCount };
+    return { cardinality, exactCardinality };
   }
 
   /**
@@ -196,7 +200,7 @@ export class OstrichStore {
     predicate: RDF.Term | undefined | null,
     object: RDF.Term | undefined | null,
     options?: { offset?: number; limit?: number },
-  ): Promise<{ triples: IQuadVersion[]; totalCount: number; hasExactCount: boolean }> {
+  ): Promise<{ triples: IQuadVersion[]; cardinality: number; exactCardinality: boolean }> {
     return new Promise((resolve, reject) => {
       if (this.closed) {
         return reject(new Error('Attempted to query a closed OSTRICH store'));
@@ -226,8 +230,8 @@ export class OstrichStore {
               Object.assign(quad, { versions: triple.versions });
               return quad;
             }),
-            totalCount,
-            hasExactCount,
+            cardinality: totalCount,
+            exactCardinality: hasExactCount,
           });
         },
       );
@@ -244,10 +248,10 @@ export class OstrichStore {
     subject: RDF.Term | undefined | null,
     predicate: RDF.Term | undefined | null,
     object: RDF.Term | undefined | null,
-  ): Promise<{ totalCount: number; hasExactCount: boolean }> {
-    const { totalCount, hasExactCount } = await this
+  ): Promise<{ cardinality: number; exactCardinality: boolean }> {
+    const { cardinality, exactCardinality } = await this
       .searchTriplesVersion(subject, predicate, object, { offset: 0, limit: 1 });
-    return { totalCount, hasExactCount };
+    return { cardinality, exactCardinality };
   }
 
   /**

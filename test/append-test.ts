@@ -57,14 +57,14 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triplesActual[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triplesActual[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triplesActual[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
@@ -92,14 +92,14 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triplesActual[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triplesActual[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triplesActual[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
@@ -127,14 +127,14 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triplesActual[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triplesActual[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triplesActual[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
@@ -193,25 +193,25 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples0[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples0[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
 
         it('should have 3 triples for version 1', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 1 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[2], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples1[2], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples1[3], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
@@ -246,25 +246,25 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples0[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples0[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
 
         it('should have 3 triples for version 1', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 1 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[2], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples1[2], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples1[3], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
@@ -299,25 +299,25 @@ describe('append', () => {
         });
 
         it('should have 3 triples for version 0', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 0 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[0], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples0[1], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples0[2], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
 
         it('should have 3 triples for version 1', async() => {
-          const { triples, totalCount } = await document
+          const { triples, cardinality } = await document
             .searchTriplesVersionMaterialized(null, null, null, { version: 1 });
 
           expect(triples).toHaveLength(3);
           expect(triples[0]).toEqual(_.omit(triples0[2], [ 'addition' ]));
           expect(triples[1]).toEqual(_.omit(triples1[2], [ 'addition' ]));
           expect(triples[2]).toEqual(_.omit(triples1[3], [ 'addition' ]));
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 

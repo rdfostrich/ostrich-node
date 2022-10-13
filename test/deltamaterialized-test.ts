@@ -134,10 +134,10 @@ describe('delta materialization', () => {
 
     describe('being searched', () => {
       describe('with a non-existing pattern between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 0, versionEnd: 1 }));
         });
 
@@ -146,15 +146,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with a non-existing pattern between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 1, versionEnd: 2 }));
         });
 
@@ -163,15 +163,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with a non-existing pattern between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 0, versionEnd: 2 }));
         });
 
@@ -180,15 +180,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[]; // , hasExactCount;
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }));
         });
 
@@ -205,15 +205,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 7', () => {
-          expect(totalCount).toEqual(7);
+          expect(cardinality).toEqual(7);
         });
       });
 
       describe('with pattern null null null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2 }));
         });
 
@@ -228,15 +228,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
       });
 
       describe('with pattern null null null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2 }));
         });
 
@@ -254,15 +254,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 8', () => {
-          expect(totalCount).toEqual(8);
+          expect(cardinality).toEqual(8);
         });
       });
 
       describe('with pattern null null null, offset 0 and limit 5 between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1, offset: 0, limit: 5 }));
         });
 
@@ -277,15 +277,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 7', () => {
-          expect(totalCount).toEqual(7);
+          expect(cardinality).toEqual(7);
         });
       });
 
       describe('with pattern null null null, offset 0 and limit 5 between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2, offset: 0, limit: 5 }));
         });
 
@@ -300,15 +300,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
       });
 
       describe('with pattern null null null, offset 0 and limit 5 between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 5 }));
         });
 
@@ -323,15 +323,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 8', () => {
-          expect(totalCount).toEqual(8);
+          expect(cardinality).toEqual(8);
         });
       });
 
       describe('with pattern null null null, offset 2 and limit 5 between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1, offset: 2, limit: 5 }));
         });
 
@@ -346,15 +346,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 7', () => {
-          expect(totalCount).toEqual(7);
+          expect(cardinality).toEqual(7);
         });
       });
 
       describe('with pattern null null null, offset 2 and limit 5 between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2, offset: 2, limit: 5 }));
         });
 
@@ -367,15 +367,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
       });
 
       describe('with pattern null null null, offset 2 and limit 5 between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2, offset: 2, limit: 5 }));
         });
 
@@ -390,15 +390,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 8', () => {
-          expect(totalCount).toEqual(8);
+          expect(cardinality).toEqual(8);
         });
       });
 
       describe('with pattern null null null, offset 10 and limit 5 between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, null, null, { versionStart: 0, versionEnd: 1, offset: 10, limit: 5 },
             ));
@@ -409,15 +409,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 7', () => {
-          expect(totalCount).toEqual(7);
+          expect(cardinality).toEqual(7);
         });
       });
 
       describe('with pattern null null null, offset 10 and limit 5 between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, null, null, { versionStart: 1, versionEnd: 2, offset: 10, limit: 5 },
             ));
@@ -428,15 +428,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
       });
 
       describe('with pattern null null null, offset 10 and limit 5 between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, null, null, { versionStart: 0, versionEnd: 2, offset: 10, limit: 5 },
             ));
@@ -447,15 +447,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 8', () => {
-          expect(totalCount).toEqual(8);
+          expect(cardinality).toEqual(8);
         });
       });
 
       describe('with pattern f null null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('f'), null, null, { versionStart: 0, versionEnd: 1 },
             ));
@@ -468,15 +468,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern f null null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(DF.namedNode('f'), null, null, { versionStart: 1, versionEnd: 2 }));
         });
 
@@ -488,15 +488,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
       });
 
       describe('with pattern f null null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(DF.namedNode('f'), null, null, { versionStart: 0, versionEnd: 2 }));
         });
 
@@ -507,15 +507,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern z null null, offset 0 and limit 1 between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 1, offset: 0, limit: 1 },
             ));
@@ -528,15 +528,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern z null null, offset 0 and limit 1 between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 1, versionEnd: 2, offset: 0, limit: 1 },
             ));
@@ -547,15 +547,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
       });
 
       describe('with pattern z null null, offset 0 and limit 1 between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 1 },
             ));
@@ -568,15 +568,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern z null null, offset 10 and limit 1 between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 1, offset: 10, limit: 1 },
             ));
@@ -587,15 +587,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern z null null, offset 10 and limit 1 between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 1, versionEnd: 2, offset: 10, limit: 1 },
             ));
@@ -606,15 +606,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
       });
 
       describe('with pattern z null null, offset 10 and limit 1 between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 2, offset: 10, limit: 1 },
             ));
@@ -625,15 +625,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern a ?p ?o between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 0, versionEnd: 1 },
             ));
@@ -650,15 +650,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 5', () => {
-          expect(totalCount).toEqual(5);
+          expect(cardinality).toEqual(5);
         });
       });
 
       describe('with pattern a ?p ?o between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 1, versionEnd: 2 },
             ));
@@ -671,15 +671,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 9', () => {
-          expect(totalCount).toEqual(9);
+          expect(cardinality).toEqual(9);
         });
       });
 
       describe('with pattern a ?p ?o between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 0, versionEnd: 2 },
             ));
@@ -695,15 +695,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 4', () => {
-          expect(totalCount).toEqual(4);
+          expect(cardinality).toEqual(4);
         });
       });
 
       describe('with pattern null b null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 0, versionEnd: 1 }));
         });
 
@@ -716,15 +716,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 3', () => {
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
       describe('with pattern null b null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 1, versionEnd: 2 }));
         });
 
@@ -733,15 +733,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 6', () => {
-          expect(totalCount).toEqual(6);
+          expect(cardinality).toEqual(6);
         });
       });
 
       describe('with pattern null b null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 0, versionEnd: 2 }));
         });
 
@@ -754,15 +754,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 3', () => {
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
       describe('with pattern null ex:p3 null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, DF.namedNode('http://example.org/p3'), null, { versionStart: 0, versionEnd: 1 },
             ));
@@ -773,15 +773,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null ex:p3 null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, DF.namedNode('http://example.org/p3'), null, { versionStart: 1, versionEnd: 2 },
             ));
@@ -792,15 +792,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null ex:p3 null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null, DF.namedNode('http://example.org/p3'), null, { versionStart: 0, versionEnd: 2 },
             ));
@@ -811,15 +811,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null,
               null,
@@ -835,15 +835,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null,
               null,
@@ -857,15 +857,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(
               null,
               null,
@@ -881,15 +881,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null f between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 0, versionEnd: 1 }));
         });
 
@@ -900,15 +900,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null f between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 1, versionEnd: 2 }));
         });
 
@@ -919,15 +919,15 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null f between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 0, versionEnd: 2 }));
         });
 
@@ -936,267 +936,267 @@ describe('delta materialization', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
     });
 
     describe('being counted', () => {
       describe('with a non-existing pattern between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 0, 1));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with a non-existing pattern between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 1, 2));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with a non-existing pattern between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 0, 2));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, null, 0, 1));
         });
 
         it('should return 7', () => {
-          expect(totalCount).toEqual(7);
+          expect(cardinality).toEqual(7);
         });
       });
 
       describe('with pattern null null null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, null, 1, 2));
         });
 
         it('should return 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
       });
 
       describe('with pattern null null null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, null, 0, 2));
         });
 
         it('should return 8', () => {
-          expect(totalCount).toEqual(8);
+          expect(cardinality).toEqual(8);
         });
       });
 
       describe('with pattern a null null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 0, 1));
         });
 
         it('should return 5', () => {
-          expect(totalCount).toEqual(5);
+          expect(cardinality).toEqual(5);
         });
       });
 
       describe('with pattern a null null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 1, 2));
         });
 
         it('should return 9', () => {
-          expect(totalCount).toEqual(9);
+          expect(cardinality).toEqual(9);
         });
       });
 
       describe('with pattern a null null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 0, 2));
         });
 
         it('should return 4', () => {
-          expect(totalCount).toEqual(4);
+          expect(cardinality).toEqual(4);
         });
       });
 
       describe('with pattern null b null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 0, 1));
         });
 
         it('should return 3', () => {
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
       describe('with pattern null b null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 1, 2));
         });
 
         it('should return 6', () => {
-          expect(totalCount).toEqual(6);
+          expect(cardinality).toEqual(6);
         });
       });
 
       describe('with pattern null b null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 0, 2));
         });
 
         it('should return 3', () => {
-          expect(totalCount).toEqual(3);
+          expect(cardinality).toEqual(3);
         });
       });
 
       describe('with pattern null ex:p3 null between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 0, 1));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null ex:p3 null between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 1, 2));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null ex:p3 null between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 0, 2));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null f between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 0, 1));
         });
 
         it('should return 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null f between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 1, 2));
         });
 
         it('should return 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null f between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 0, 2));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 1', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(
               null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 0, 1,
             ));
         });
 
         it('should return 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 1 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(
               null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 1, 2,
             ));
         });
 
         it('should return 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
       });
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 2', () => {
-        let totalCount: number;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount } = await document
+          ({ cardinality } = await document
             .countTriplesDeltaMaterialized(
               null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 0, 2,
             ));
         });
 
         it('should return 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
       });
     });

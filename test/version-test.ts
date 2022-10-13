@@ -101,10 +101,10 @@ describe('version', () => {
 
     describe('being searched', () => {
       describe('with a non-existing pattern', () => {
-        let totalCount: number;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount } = await document
+          ({ triples, cardinality } = await document
             .searchTriplesVersion(DF.namedNode('1'), null, null));
         });
 
@@ -113,16 +113,16 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
       });
 
       describe('with pattern null null null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, null));
         });
 
@@ -147,20 +147,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null null null, offset 0 and limit 5', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, null, { offset: 0, limit: 5 }));
         });
 
@@ -175,20 +175,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null null null, offset 2 and limit 5', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, null, { offset: 2, limit: 5 }));
         });
 
@@ -203,21 +203,21 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       // eslint-disable-next-line mocha/no-skipped-tests
       describe.skip('with pattern null null null, offset 20 and limit 5', () => { // TODO: fix me
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, null, { offset: 20, limit: 5 }));
         });
 
@@ -226,20 +226,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern f null null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(DF.namedNode('f'), null, null));
         });
 
@@ -251,20 +251,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern c null null, offset 0 and limit 1', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(DF.namedNode('c'), null, null, { offset: 0, limit: 1 }));
         });
 
@@ -275,21 +275,21 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       // eslint-disable-next-line mocha/no-skipped-tests
       describe.skip('with pattern c null null, offset 10 and limit 1', () => { // TODO: fix me
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(DF.namedNode('c'), null, null, { offset: 10, limit: 1 }));
         });
 
@@ -298,20 +298,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern a ?p ?o', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(DF.namedNode('a'), DF.variable('p'), DF.variable('o')));
         });
 
@@ -330,20 +330,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 9', () => {
-          expect(totalCount).toEqual(9);
+          expect(cardinality).toEqual(9);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null b null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, DF.namedNode('b'), null));
         });
 
@@ -359,20 +359,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 6', () => {
-          expect(totalCount).toEqual(6);
+          expect(cardinality).toEqual(6);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null ex:p3 null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, DF.namedNode('http://example.org/p3'), null));
         });
 
@@ -381,20 +381,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
 
         it('should not be an exact count', () => {
-          expect(hasExactCount).toBe(false);
+          expect(exactCardinality).toBe(false);
         });
       });
 
       describe('with pattern null null "a"^^http://example.org/literal', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, DF.literal('a', DF.namedNode('http://example.org/literal'))));
         });
 
@@ -405,20 +405,20 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null null f', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         let triples: RDF.Quad[];
         beforeAll(async() => {
-          ({ triples, totalCount, hasExactCount } = await document
+          ({ triples, cardinality, exactCardinality } = await document
             .searchTriplesVersion(null, null, DF.namedNode('f')));
         });
 
@@ -430,132 +430,132 @@ describe('version', () => {
         });
 
         it('should estimate the total count as 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
     });
 
     describe('being counted', () => {
       describe('with a non-existing pattern', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(DF.namedNode('1'), null, null));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null null null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(null, null, null));
         });
 
         it('should return 15', () => {
-          expect(totalCount).toEqual(15);
+          expect(cardinality).toEqual(15);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern a null null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(DF.namedNode('a'), null, null));
         });
 
         it('should return 9', () => {
-          expect(totalCount).toEqual(9);
+          expect(cardinality).toEqual(9);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null b null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(null, DF.namedNode('b'), null));
         });
 
         it('should return 6', () => {
-          expect(totalCount).toEqual(6);
+          expect(cardinality).toEqual(6);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null ex:p3 null', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(null, DF.namedNode('http://example.org/p3'), null));
         });
 
         it('should return 0', () => {
-          expect(totalCount).toEqual(0);
+          expect(cardinality).toEqual(0);
         });
 
         it('should not be an exact count', () => {
-          expect(hasExactCount).toBe(false);
+          expect(exactCardinality).toBe(false);
         });
       });
 
       describe('with pattern null null f', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(null, null, DF.namedNode('f')));
         });
 
         it('should return 2', () => {
-          expect(totalCount).toEqual(2);
+          expect(cardinality).toEqual(2);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
 
       describe('with pattern null null "a"^^http://example.org/literal', () => {
-        let hasExactCount: boolean;
-        let totalCount: number;
+        let exactCardinality: boolean;
+        let cardinality: number;
         beforeAll(async() => {
-          ({ totalCount, hasExactCount } = await document
+          ({ cardinality, exactCardinality } = await document
             .countTriplesVersion(null, null, DF.literal('a', DF.namedNode('http://example.org/literal'))));
         });
 
         it('should return 1', () => {
-          expect(totalCount).toEqual(1);
+          expect(cardinality).toEqual(1);
         });
 
         it('should be an exact count', () => {
-          expect(hasExactCount).toBe(true);
+          expect(exactCardinality).toBe(true);
         });
       });
     });

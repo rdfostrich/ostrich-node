@@ -89,9 +89,9 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { triples, totalCount } = await ostrichStore
+const { triples, cardinality } = await ostrichStore
     .searchTriplesVersionMaterialized('http://example.org/s1', null, null, { version: 1, offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
+console.log('Approximately ' + cardinality + ' triples match the pattern in the given version.');
 console.log(triples);
 
 await ostrichStore.close();
@@ -107,9 +107,9 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { totalCount } = await ostrichStore
+const { cardinality } = await ostrichStore
     .countTriplesVersionMaterialized('http://example.org/s1', null, null, { version: 1, offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
+console.log('Approximately ' + cardinality + ' triples match the pattern in the given version.');
 
 await ostrichStore.close();
 ```
@@ -128,9 +128,9 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { triples, totalCount } = await ostrichStore
+const { triples, cardinality } = await ostrichStore
     .searchTriplesDeltaMaterialized('http://example.org/s1', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
+console.log('Approximately ' + cardinality + ' triples match the pattern between the two given versions.');
 console.log(triples);
 
 await ostrichStore.close();
@@ -146,9 +146,9 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { totalCount } = await ostrichStore
+const { cardinality } = await ostrichStore
     .countTriplesDeltaMaterialized('http://example.org/s1', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
+console.log('Approximately ' + cardinality + ' triples match the pattern between the two given versions.');
 
 await ostrichStore.close();
 ```
@@ -164,10 +164,10 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { triples, totalCount } = await ostrichStore
+const { triples, cardinality } = await ostrichStore
     .searchTriplesVersion('http://example.org/s1', null, null, { offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
-console.log(triples); // TODO
+console.log('Approximately ' + cardinality + ' triples match the pattern in all versions.');
+console.log(triples);
 
 await ostrichStore.close();
 ```
@@ -182,9 +182,9 @@ import { fromPath } from 'ostrich-bindings';
 
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { totalCount } = await ostrichStore
+const { cardinality } = await ostrichStore
     .countTriplesVersion('http://example.org/s1', null, null, { offset: 0, limit: 10 });
-console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
+console.log('Approximately ' + cardinality + ' triples match the pattern in all versions.');
 
 await ostrichStore.close();
 ```

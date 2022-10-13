@@ -50,13 +50,13 @@ const streamifyArray = require('streamify-array');
         },
       }), async args => {
       await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
-        const { triples, totalCount, hasExactCount } = await store.searchTriplesVersionMaterialized(
+        const { triples, cardinality, exactCardinality } = await store.searchTriplesVersionMaterialized(
           subject,
           predicate,
           object,
           { offset: args.offset, limit: args.limit, version: args.version },
         );
-        process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
+        process.stdout.write(`# Total matches: ${cardinality}${exactCardinality ? '' : ' (estimated)'}\n`);
         await new Promise<void>((resolve, reject) => rdfSerializer
           .serialize(streamifyArray(triples), { contentType: args.format })
           .pipe(process.stdout)
@@ -80,13 +80,13 @@ const streamifyArray = require('streamify-array');
         },
       }), async args => {
       await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
-        const { triples, totalCount, hasExactCount } = await store.searchTriplesDeltaMaterialized(
+        const { triples, cardinality, exactCardinality } = await store.searchTriplesDeltaMaterialized(
           subject,
           predicate,
           object,
           { offset: args.offset, limit: args.limit, versionStart: args.versionStart, versionEnd: args.versionEnd },
         );
-        process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
+        process.stdout.write(`# Total matches: ${cardinality}${exactCardinality ? '' : ' (estimated)'}\n`);
         for (const triple of triples) {
           const stringTriple = quadToStringQuadTtl(triple);
           console.log(`${triple.addition ? '+ ' : '- '} ${stringTriple.subject} ${stringTriple.predicate} ${stringTriple.object}`);
@@ -95,13 +95,13 @@ const streamifyArray = require('streamify-array');
     })
     .command('v [archive] [query]', 'Query version', yrgs => yrgs, async args => {
       await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
-        const { triples, totalCount, hasExactCount } = await store.searchTriplesVersion(
+        const { triples, cardinality, exactCardinality } = await store.searchTriplesVersion(
           subject,
           predicate,
           object,
           { offset: args.offset, limit: args.limit },
         );
-        process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
+        process.stdout.write(`# Total matches: ${cardinality}${exactCardinality ? '' : ' (estimated)'}\n`);
         for (const triple of triples) {
           const stringTriple = quadToStringQuadTtl(triple);
           console.log(`${stringTriple.subject} ${stringTriple.predicate} ${stringTriple.object}`);
@@ -113,8 +113,8 @@ const streamifyArray = require('streamify-array');
       await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
         console.log(`OSTRICH store: ${args.archive}
   Versions: ${store.maxVersion}
-  Unique triples: ${(await store.countTriplesVersion(null, null, null)).totalCount}
-  Triples in last version: ${(await store.countTriplesVersionMaterialized(null, null, null)).totalCount}`);
+  Unique triples: ${(await store.countTriplesVersion(null, null, null)).cardinality}
+  Triples in last version: ${(await store.countTriplesVersionMaterialized(null, null, null)).cardinality}`);
       });
     })
     .strict()
