@@ -3,91 +3,119 @@
 [![npm version](https://badge.fury.io/js/ostrich-bindings.svg)](https://www.npmjs.com/package/ostrich-bindings)
 [![DOI](https://zenodo.org/badge/97819900.svg)](https://zenodo.org/badge/latestdoi/97819900)
 
-[OSTRICH](https://github.com/rdfostrich/ostrich/) is a triple store with versioning support.
+This package provides TypeScript/JavaScript bindings for [OSTRICH](https://github.com/rdfostrich/ostrich/) RDF archives.
 
-This `ostrich-bindings` package for Node.js provides C++ bindings to enable querying support from JavaScript.
+Concretely, it has the following features:
+* Creating a new OSTRICH store
+* Appending to an OSTRICH store
+* Querying (VM/DM/VQ) an OSTRICH store by triple pattern.
+* Obtaining cardinality estimates (VM/DM/VQ) in an OSTRICH store by triple pattern.
 
-## Usage
-
-OSTRICH requires ZLib, Kyoto Cabinet and CMake (compilation only) to be installed.
-See `install-kc-ci.sh` on how to install Kyoto Cabinet.
-
-### Importing the library
-Install the library by adding `ostrich-bindings` to your `package.json` or executing
+## Installation
 
 ```bash
 $ npm install ostrich-bindings
 ```
-
-Then require the library.
-
-```JavaScript
-var ostrich = require('ostrich-bindings');
+or
+```bash
+$ yarn add ostrich-bindings
 ```
 
-### Opening and closing an OSTRICH store
+**WARNING**: OSTRICH requires ZLib, Kyoto Cabinet and CMake (compilation only) to be installed.
+See [`install-kc-ci.sh`](https://github.com/rdfostrich/ostrich-node/blob/master/install-kc-ci.sh) on how to install Kyoto Cabinet.
 
-Open an OSTRICH folder with `ostrich.fromPath`,
-which takes folder name and callback arguments.
+## Usage
+
+### Opening and closing
+
+An OSTRICH store can be opened using `fromPath`,
+which takes path name and an option object.
 The OSTRICH document will be passed to the callback.
 Close the document with `close`.
 
-```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  // Don't forget to close the store when you're done
-  ostrichStore.close();
-});
+```TypeScript
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich');
+
+// --- Do stuff ---
+
+// Don't forget to close the store when you're done
+await store.close();
 ```
 
 By default, a store will be opened in read-only mode, which will be faster.
 To enable writing, open the store as follows:
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
-  // Don't forget to close the store when you're done
-  ostrichStore.close();
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+// --- Do stuff ---
+
+// Don't forget to close the store when you're done
+await store.close();
 ```
 
-### Searching for triples matching a pattern in a certain version
+Checking if a store is closed can be done via the field `store.closed`;
+
+### Reading the number of versions
+
+The number of versions available in a store can be read as follows:
+
+```typescript
+console.log(store.maxVersion);
+```
+
+### Searching for triples matching a pattern in a certain version (VM)
+
 Search for triples with `searchTriplesVersionMaterialized`,
 which takes subject, predicate, object, options, and callback arguments.
+
 Subject, predicate, and object can be IRIs or literals,
-[represented as simple strings](https://github.com/RubenVerborgh/N3.js#triple-representation).
+[represented as RDF/JS terms](https://rdf.js.org/data-model-spec/#term-interface).
 If any of these parameters is `null` or a variable, it is considered a wildcard.
+
 Optionally, a version, offset and limit can be passed in an options object,
 The version parameter will default to the latest available version if it is not provided.
 The offset and limit parameters will select only the specified subset.
 
-The callback returns an array of triples that match the pattern.
-A third parameter indicates an estimate of the total number of matching triples.
+The async function will return an array of triples that match the pattern,
+and a field indicating an estimate of the total number of matching triples.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.searchTriplesVersionMaterialized('http://example.org/s1', null, null, { version: 1, offset: 0, limit: 10 },
-    function (error, triples, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
-      triples.forEach(function (triple) { console.log(triple); });
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { triples, totalCount } = await ostrichStore
+    .searchTriplesVersionMaterialized('http://example.org/s1', null, null, { version: 1, offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
+console.log(triples);
+
+await ostrichStore.close();
 ```
 
-### Counting triples matching a pattern in a certain version
+### Counting triples matching a pattern in a certain version (VM)
+
 Retrieve an estimate of the total number of triples matching a pattern in a certain version with `countTriplesVersionMaterialized`,
 which takes subject, predicate, object, version (optional), and callback arguments.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.countTriplesVersionMaterialized('http://example.org/s1', null, null, 1,
-    function (error, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { totalCount } = await ostrichStore
+    .countTriplesVersionMaterialized('http://example.org/s1', null, null, { version: 1, offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern in the given version.');
+
+await ostrichStore.close();
 ```
 
-### Searching for triple differences matching a pattern between two versions
+### Searching for triple differences matching a pattern between two versions (DM)
+
 Similar to `searchTriplesVersionMaterialized`, `searchTriplesDeltaMaterialized`
 allows you to search triples matching a pattern that are changed between two given versions.
 Each triple is annotated with an `addition` field,
@@ -96,65 +124,90 @@ indicating whether or not it has been added relative to the two versions.
 The options object now takes the mandatory `versionStart` and `versionEnd` parameters.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.searchTriplesDeltaMaterialized('http://example.org/s1', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 10 },
-    function (error, triples, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
-      triples.forEach(function (triple) { console.log((triple.addition ? '+ ' : '- ') + triple); });
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { triples, totalCount } = await ostrichStore
+    .searchTriplesDeltaMaterialized('http://example.org/s1', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
+console.log(triples);
+
+await ostrichStore.close();
 ```
 
-### Counting triples matching a pattern between two versions
+### Counting triples matching a pattern between two versions (DM)
+
 Retrieve an estimate of the total number of triples matching a pattern in a certain version with `countTriplesDeltaMaterialized`,
 which takes subject, predicate, object, versionStart, versionEnd, and callback arguments.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.countTriplesDeltaMaterialized('http://example.org/s1', null, null, 0, 2,
-    function (error, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { totalCount } = await ostrichStore
+    .countTriplesDeltaMaterialized('http://example.org/s1', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern between the two given versions.');
+
+await ostrichStore.close();
 ```
 
-### Searching for triples matching a pattern with version annotations
+### Searching for triples matching a pattern with version annotations (VQ)
+
 Finally, `searchTriplesVersion`
 allows you to search triples matching a pattern over all versions.
 Each triple is annotated with a list `versions` for all the versions it is present it. 
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.searchTriplesVersion('http://example.org/s1', null, null, { offset: 0, limit: 10 },
-    function (error, triples, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
-      triples.forEach(function (triple) { console.log(triple + ' ' + triple.versions); });
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { triples, totalCount } = await ostrichStore
+    .searchTriplesVersion('http://example.org/s1', null, null, { offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
+console.log(triples); // TODO
+
+await ostrichStore.close();
 ```
 
-### Counting triples matching a pattern
+### Counting triples matching a pattern (VQ)
+
 Retrieve an estimate of the total number of triples matching a pattern over all version in a certain version with `countTriplesVersion`,
 which takes subject, predicate, object, and callback arguments.
 
 ```JavaScript
-ostrich.fromPath('./test/test.ostrich', function (error, ostrichStore) {
-  ostrichStore.countTriplesVersion('http://example.org/s1', null, null,
-    function (error, totalCount) {
-      console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
-      ostrichStore.close();
-    });
-});
+import { fromPath } from 'ostrich-bindings';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { totalCount } = await ostrichStore
+    .countTriplesVersion('http://example.org/s1', null, null, { offset: 0, limit: 10 });
+console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
+
+await ostrichStore.close();
 ```
 
 ### Appending a new version
+
 Inserts a new version into the store, with the given optional version id and an array of triples, annotated with `addition: true` or `addition: false`.
 In the first version (0), all triples MUST be additions.
 
 ```JavaScript
+import { fromPath } from 'ostrich-bindings';
+import { DataFactory } from 'rdf-data-factory';
+
+const store = await fromPath('./test/test.ostrich', { readOnly: false });
+
+const { totalCount } = await ostrichStore.append([
+    quadDelta()
+]);
+console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
+
+await ostrichStore.close();
+
+
 ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
   ostrichStore.append(0, [{ subject: 'a', predicate: 'b', object: 'c', addition: true }, { subject: 'a', predicate: 'b', object: 'd', addition: true }],
     function (error, insertedCount) {
@@ -169,40 +222,42 @@ Note: if the array of triples is already sorted in SPO-order,
 Behaviour is undefined if this is called with an array that is not sorted.
 
 ## Standalone utility
-The standalone utility `ostrich` allows you to query OSTRICH dataset from the command line.
-<br>
+
+The command-line utility `ostrich` allows you to query OSTRICH dataset from the command line.
+
 To install system-wide, execute:
 ```bash
-sudo npm install -g ostrich-bindings
+npm install -g ostrich-bindings
 ```
 
 Specify queries as follows:
 ```
-ostrich dataset.ostrich --queryversionmaterialized '?s ?p ?o' --offset 200 --limit 100 --version 1 --format turtle
-ostrich dataset.ostrich --querydeltamaterialized '?s ?p ?o' --offset 200 --limit 100 --versionStart 0 --versionEnd 2 --format turtle
-ostrich dataset.ostrich --queryversion '?s ?p ?o' --offset 200 --limit 100 --format turtle
+ostrich vm dataset.ostrich '?s ?p ?o' --offset 200 --limit 100 --version 1 --format turtle
+ostrich dm dataset.ostrich '?s ?p ?o' --offset 200 --limit 100 --versionStart 0 --versionEnd 2
+ostrich vq dataset.ostrich '?s ?p ?o' --offset 200 --limit 100
 ```
-Replace any of the query variables by an [IRI or literal](https://github.com/RubenVerborgh/N3.js#triple-representation) to match specific patterns.
+Replace any of the query variables by an [IRI or literal](https://www.npmjs.com/package/rdf-string) to match specific patterns.
 
 Or with less verbose parameters:
 ```
-ostrich dataset.ostrich --qvm '?s ?p ?o' -o 200 -l 100 -v 1 -f turtle
-ostrich dataset.ostrich --qdm '?s ?p ?o' -o 200 -l 100 --vs 0 -ve 2 -f turtle
-ostrich dataset.ostrich --qv '?s ?p ?o' -o 200 -l 100 -f turtle
+ostrich vm dataset.ostrich '?s ?p ?o' -o 200 -l 100 -v 1 -f turtle
+ostrich dm dataset.ostrich '?s ?p ?o' -o 200 -l 100 -s 0 -e 2
+ostrich vq dataset.ostrich '?s ?p ?o' -o 200 -l 100
 ```
 
 ## Build manually
+
 To build the module from source, follow these instructions:
 ```Shell
-git clone --recurse-submodules https://git.datasciencelab.ugent.be/linked-data-fragments/Ostrich-Node
-cd Ostrich-Node
+git clone --recurse-submodules git@github.com:rdfostrich/ostrich-node.git
+cd ostrich-node
 yarn install
 yarn run test
 ```
 
 If you make changes to the source, do the following to rebuild:
 ```bash
-yarn install && yarn run test
+yarn install
 ```
 
 ## License
