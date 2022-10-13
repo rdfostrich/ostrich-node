@@ -10,6 +10,7 @@ module.exports = {
     'build/*',
     'lib/**/*.d.ts',
     'bin/**/*.d.ts',
+    'test/**/*.d.ts',
   ],
   extends: [
     '@rubensworks'
