@@ -10,8 +10,8 @@ const streamifyArray = require('streamify-array');
 (async function() {
   const contentTypes = await rdfSerializer.getContentTypes();
   await yargs(hideBin(process.argv))
-    .positional('dataset', {
-      describe: 'Path to an OSTRICH dataset',
+    .positional('archive', {
+      describe: 'Path to an OSTRICH archive',
       type: 'string',
       demandOption: true,
     })
@@ -32,7 +32,7 @@ const streamifyArray = require('streamify-array');
         describe: 'Number of results to show',
       },
     })
-    .command('vm <dataset> <query>', 'Query version materialized', yrgs => yrgs
+    .command('vm <archive> <query>', 'Query version materialized', yrgs => yrgs
       .options({
         version: {
           alias: 'v',
@@ -48,7 +48,7 @@ const streamifyArray = require('streamify-array');
           default: 'text/turtle',
         },
       }), async args => {
-      await queryContext(args.dataset, args.query, args.format, async(store, subject, predicate, object) => {
+      await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
         const { triples, totalCount, hasExactCount } = await store.searchTriplesVersionMaterialized(
           subject,
           predicate,
@@ -66,7 +66,7 @@ const streamifyArray = require('streamify-array');
           .on('end', resolve));
       });
     })
-    .command('dm [dataset] [query]', 'Query delta materialized', yrgs => yrgs
+    .command('dm [archive] [query]', 'Query delta materialized', yrgs => yrgs
       .options({
         versionStart: {
           alias: 's',
@@ -79,7 +79,7 @@ const streamifyArray = require('streamify-array');
           describe: 'The ending version to query',
         },
       }), async args => {
-      await queryContext(args.dataset, args.query, args.format, async(store, subject, predicate, object) => {
+      await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
         const { triples, totalCount, hasExactCount } = await store.searchTriplesDeltaMaterialized(
           subject,
           predicate,
@@ -93,8 +93,8 @@ const streamifyArray = require('streamify-array');
         }
       });
     })
-    .command('v [dataset] [query]', 'Query version', yrgs => yrgs, async args => {
-      await queryContext(args.dataset, args.query, args.format, async(store, subject, predicate, object) => {
+    .command('v [archive] [query]', 'Query version', yrgs => yrgs, async args => {
+      await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
         const { triples, totalCount, hasExactCount } = await store.searchTriplesVersion(
           subject,
           predicate,
@@ -109,12 +109,20 @@ const streamifyArray = require('streamify-array');
         }
       });
     })
+    .command('metadata [archive]', 'Show the metadata of a given archive', yrgs => yrgs, async args => {
+      await queryContext(args.archive, args.query, args.format, async(store, subject, predicate, object) => {
+        console.log(`OSTRICH store: ${args.archive}
+  Versions: ${store.maxVersion}
+  Unique triples: ${(await store.countTriplesVersion(null, null, null)).totalCount}
+  Triples in last version: ${(await store.countTriplesVersionMaterialized(null, null, null)).totalCount}`);
+      });
+    })
     .strict()
     .demandCommand()
     .version(false)
-    .example(`$0 vm dataset.ostrich '?s <ex:p> ?o'`, '')
-    .example(`$0 vm dataset.ostrich '?s ?p ?o' -v 10 -o 5 -l 10 -f turtle`, '')
-    .example(`$0 vm dataset.ostrich '?s ?p ?o' --version 10 -offset 5 --limit 10`, '')
+    .example(`$0 vm archive.ostrich '?s <ex:p> ?o'`, '')
+    .example(`$0 vm archive.ostrich '?s ?p ?o' -v 10 -o 5 -l 10 -f turtle`, '')
+    .example(`$0 vm archive.ostrich '?s ?p ?o' --version 10 -offset 5 --limit 10`, '')
     .help()
     .parse();
 })()
@@ -128,7 +136,7 @@ const streamifyArray = require('streamify-array');
   });
 
 async function queryContext(
-  dataset: string,
+  archive: string,
   query: string,
   format: string | undefined,
   queryCb: (
@@ -145,7 +153,7 @@ async function queryContext(
   const object = parts && !parts[3].startsWith('?') && parts[3] || null;
 
   // Load Ostrich
-  const store = await fromPath(dataset);
+  const store = await fromPath(archive);
   await queryCb(store, subject, predicate, object);
   await store.close();
 }
