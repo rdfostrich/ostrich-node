@@ -1,5 +1,8 @@
 import * as fs from 'fs';
-
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+import type { IStringQuad } from 'rdf-string';
+import { quadToStringQuad, stringQuadToQuad, termToString } from 'rdf-string';
 const ostrichNative = require('../build/Release/ostrich.node');
 
 // A string comparison function that is consistent with the sorting that happens in the string::compare function in C++
@@ -15,17 +18,29 @@ export function strcmp(left: string, right: string): number {
   return left.charAt(i) < right.charAt(i) ? -1 : 1;
 }
 
-export interface ITripleRaw {
-  subject: string;
-  predicate: string;
-  object: string;
+export function quadDelta(quad: RDF.Quad, addition: boolean): IQuadDelta {
+  Object.assign(quad, { addition });
+  return <IQuadDelta> quad;
 }
 
-export interface ITripleDeltaRaw extends ITripleRaw {
+export function quadVersion(quad: RDF.Quad, versions: number[]): IQuadVersion {
+  Object.assign(quad, { versions });
+  return <IQuadVersion> quad;
+}
+
+export interface IStringQuadDelta extends IStringQuad {
   addition: boolean;
 }
 
-export interface ITripleVersionRaw extends ITripleRaw {
+export interface IStringQuadVersion extends IStringQuad {
+  versions: number[];
+}
+
+export interface IQuadDelta extends RDF.Quad {
+  addition: boolean;
+}
+
+export interface IQuadVersion extends RDF.Quad {
   versions: number[];
 }
 
@@ -35,44 +50,44 @@ export type OstrichStore = {
   _isClosingCallbacks?: ((error?: Error) => void)[];
 
   searchTriplesVersionMaterialized: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
     options?: { offset?: number; limit?: number; version?: number },
-  ) => Promise<{ triples: ITripleRaw[]; totalCount: number; hasExactCount: boolean }>;
+  ) => Promise<{ triples: RDF.Quad[]; totalCount: number; hasExactCount: boolean }>;
   countTriplesVersionMaterialized: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
     version?: number,
   ) => Promise<{ totalCount: number; hasExactCount: boolean }>;
   searchTriplesDeltaMaterialized: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
     options?: { offset?: number; limit?: number; versionStart?: number; versionEnd?: number },
-  ) => Promise<{ triples: ITripleDeltaRaw[]; totalCount: number; hasExactCount: boolean }>;
+  ) => Promise<{ triples: IQuadDelta[]; totalCount: number; hasExactCount: boolean }>;
   countTriplesDeltaMaterialized: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
     versionStart?: number,
     versionEnd?: number,
   ) => Promise<{ totalCount: number; hasExactCount: boolean }>;
   searchTriplesVersion: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
     options?: { offset?: number; limit?: number },
-  ) => Promise<{ triples: ITripleVersionRaw[]; totalCount: number; hasExactCount: boolean }>;
+  ) => Promise<{ triples: IQuadVersion[]; totalCount: number; hasExactCount: boolean }>;
   countTriplesVersion: (
-    subject: string | undefined | null,
-    predicate: string | undefined | null,
-    object: string | undefined | null,
+    subject: RDF.Term | undefined | null,
+    predicate: RDF.Term | undefined | null,
+    object: RDF.Term | undefined | null,
   ) => Promise<{ totalCount: number; hasExactCount: boolean }>;
 
-  append: (triples: ITripleDeltaRaw[], version?: number) => Promise<number>;
-  appendSorted: (triples: ITripleDeltaRaw[], version?: number) => Promise<number>;
+  append: (triples: IQuadDelta[], version?: number) => Promise<number>;
+  appendSorted: (triples: IQuadDelta[], version?: number) => Promise<number>;
   close: (remove?: boolean) => Promise<void>;
 
   _close: (remove: boolean, callback: (error?: Error) => void) => void;
@@ -81,11 +96,19 @@ export type OstrichStore = {
   _operations: number;
   _operationsCallbacks: (() => void)[];
   maxVersion: number;
+  dataFactory: RDF.DataFactory;
 };
 
 /*     Auxiliary methods for OstrichStore     */
 
 const OstrichStorePrototype = ostrichNative.OstrichStore.prototype;
+
+function serializeTerm(term: RDF.Term | undefined | null): string | null {
+  if (!term || term.termType === 'Variable') {
+    return '';
+  }
+  return termToString(term);
+}
 
 /**
  * Searches the document for triples with the given subject, predicate, object and version
@@ -96,11 +119,11 @@ const OstrichStorePrototype = ostrichNative.OstrichStore.prototype;
  * @param options Options
  */
 OstrichStorePrototype.searchTriplesVersionMaterialized = function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
   options?: { offset?: number; limit?: number; version?: number },
-): Promise<{ triples: ITripleRaw[]; totalCount: number; hasExactCount: boolean }> {
+): Promise<{ triples: RDF.Quad[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
       return reject(new Error('Attempted to query a closed OSTRICH store'));
@@ -108,33 +131,24 @@ OstrichStorePrototype.searchTriplesVersionMaterialized = function(
     if (this.maxVersion < 0) {
       return reject(new Error('Attempted to query an OSTRICH store without versions'));
     }
-    if (typeof subject !== 'string' || subject.startsWith('?')) {
-      subject = '';
-    }
-    if (typeof predicate !== 'string' || predicate.startsWith('?')) {
-      predicate = '';
-    }
-    if (typeof object !== 'string' || object.startsWith('?')) {
-      object = '';
-    }
     const offset = options && options.offset ? Math.max(0, options.offset) : 0;
     const limit = options && options.limit ? Math.max(0, options.limit) : 0;
     const version = options && (options.version || options.version === 0) ? options.version : -1;
     this._operations++;
     this._searchTriplesVersionMaterialized(
-      subject,
-      predicate,
-      object,
+      serializeTerm(subject),
+      serializeTerm(predicate),
+      serializeTerm(object),
       offset,
       limit,
       version,
-      (error: Error | undefined, triples: ITripleRaw[], totalCount: number, hasExactCount: boolean) => {
+      (error: Error | undefined, triples: IStringQuad[], totalCount: number, hasExactCount: boolean) => {
         this._operations--;
         this._finishOperation();
         if (error) {
           return reject(error);
         }
-        resolve({ triples, totalCount, hasExactCount });
+        resolve({ triples: triples.map(triple => stringQuadToQuad(triple)), totalCount, hasExactCount });
       },
     );
   });
@@ -149,9 +163,9 @@ OstrichStorePrototype.searchTriplesVersionMaterialized = function(
  * @param version The version to obtain.
  */
 OstrichStorePrototype.countTriplesVersionMaterialized = async function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
   version = -1,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
   const { totalCount, hasExactCount } = await (<OstrichStore> this)
@@ -168,26 +182,17 @@ OstrichStorePrototype.countTriplesVersionMaterialized = async function(
  * @param options Options
  */
 OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
   options: { offset?: number; limit?: number; versionStart: number; versionEnd: number },
-): Promise<{ triples: ITripleDeltaRaw[]; totalCount: number; hasExactCount: boolean }> {
+): Promise<{ triples: IQuadDelta[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
       return reject(new Error('Attempted to query a closed OSTRICH store'));
     }
     if (this.maxVersion < 0) {
       return reject(new Error('Attempted to query an OSTRICH store without versions'));
-    }
-    if (typeof subject !== 'string' || subject.startsWith('?')) {
-      subject = '';
-    }
-    if (typeof predicate !== 'string' || predicate.startsWith('?')) {
-      predicate = '';
-    }
-    if (typeof object !== 'string' || object.startsWith('?')) {
-      object = '';
     }
     const offset = options.offset ? Math.max(0, options.offset) : 0;
     const limit = options.limit ? Math.max(0, options.limit) : 0;
@@ -201,20 +206,28 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
     }
     this._operations++;
     this._searchTriplesDeltaMaterialized(
-      subject,
-      predicate,
-      object,
+      serializeTerm(subject),
+      serializeTerm(predicate),
+      serializeTerm(object),
       offset,
       limit,
       versionStart,
       versionEnd,
-      (error: Error, triples: ITripleDeltaRaw[], totalCount: number, hasExactCount: boolean) => {
+      (error: Error, triples: IStringQuadDelta[], totalCount: number, hasExactCount: boolean) => {
         this._operations--;
         this._finishOperation();
         if (error) {
           return reject(error);
         }
-        resolve({ triples, totalCount, hasExactCount });
+        resolve({
+          triples: <IQuadDelta[]> triples.map(triple => {
+            const quad = stringQuadToQuad(triple);
+            Object.assign(quad, { addition: triple.addition });
+            return quad;
+          }),
+          totalCount,
+          hasExactCount,
+        });
       },
     );
   });
@@ -230,9 +243,9 @@ OstrichStorePrototype.searchTriplesDeltaMaterialized = function(
  * @param versionEnd The final version.
  */
 OstrichStorePrototype.countTriplesDeltaMaterialized = async function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
   versionStart: number,
   versionEnd: number,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
@@ -253,11 +266,11 @@ OstrichStorePrototype.countTriplesDeltaMaterialized = async function(
  * @param options Options
  */
 OstrichStorePrototype.searchTriplesVersion = function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
   options?: { offset?: number; limit?: number },
-): Promise<{ triples: ITripleVersionRaw[]; totalCount: number; hasExactCount: boolean }> {
+): Promise<{ triples: IQuadVersion[]; totalCount: number; hasExactCount: boolean }> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
       return reject(new Error('Attempted to query a closed OSTRICH store'));
@@ -265,32 +278,31 @@ OstrichStorePrototype.searchTriplesVersion = function(
     if (this.maxVersion < 0) {
       return reject(new Error('Attempted to query an OSTRICH store without versions'));
     }
-    if (typeof subject !== 'string' || subject.startsWith('?')) {
-      subject = '';
-    }
-    if (typeof predicate !== 'string' || predicate.startsWith('?')) {
-      predicate = '';
-    }
-    if (typeof object !== 'string' || object.startsWith('?')) {
-      object = '';
-    }
     const offset = options && options.offset ? Math.max(0, options.offset) : 0;
     const limit = options && options.limit ? Math.max(0, options.limit) : 0;
 
     this._operations++;
     this._searchTriplesVersion(
-      subject,
-      predicate,
-      object,
+      serializeTerm(subject),
+      serializeTerm(predicate),
+      serializeTerm(object),
       offset,
       limit,
-      (error: Error, triples: ITripleVersionRaw[], totalCount: number, hasExactCount: boolean) => {
+      (error: Error, triples: IStringQuadVersion[], totalCount: number, hasExactCount: boolean) => {
         this._operations--;
         this._finishOperation();
         if (error) {
           return reject(error);
         }
-        resolve({ triples, totalCount, hasExactCount });
+        resolve({
+          triples: <IQuadVersion[]> triples.map(triple => {
+            const quad = stringQuadToQuad(triple);
+            Object.assign(quad, { versions: triple.versions });
+            return quad;
+          }),
+          totalCount,
+          hasExactCount,
+        });
       },
     );
   });
@@ -303,9 +315,9 @@ OstrichStorePrototype.searchTriplesVersion = function(
  * @param object An RDF term.
  */
 OstrichStorePrototype.countTriplesVersion = async function(
-  subject: string | undefined | null,
-  predicate: string | undefined | null,
-  object: string | undefined | null,
+  subject: RDF.Term | undefined | null,
+  predicate: RDF.Term | undefined | null,
+  object: RDF.Term | undefined | null,
 ): Promise<{ totalCount: number; hasExactCount: boolean }> {
   const { totalCount, hasExactCount } = await (<OstrichStore> this)
     .searchTriplesVersion(subject, predicate, object, { offset: 0, limit: 1 });
@@ -317,14 +329,14 @@ OstrichStorePrototype.countTriplesVersion = async function(
  * @param triples The triples to append, annotated with addition: true or false as the given version.
  * @param version The version to append at, defaults to the last version
  */
-OstrichStorePrototype.append = function(triples: ITripleDeltaRaw[], version = -1): Promise<number> {
+OstrichStorePrototype.append = function(triples: IQuadDelta[], version = -1): Promise<number> {
   // Make sure our triples are sorted
   triples = triples.sort((left, right) => {
-    const compS = strcmp(left.subject, right.subject);
+    const compS = strcmp(termToString(left.subject), termToString(right.subject));
     if (compS === 0) {
-      const compP = strcmp(left.predicate, right.predicate);
+      const compP = strcmp(termToString(left.predicate), termToString(right.predicate));
       if (compP === 0) {
-        return strcmp(left.object, right.object);
+        return strcmp(termToString(left.object), termToString(right.object));
       }
       return compP;
     }
@@ -340,7 +352,7 @@ OstrichStorePrototype.append = function(triples: ITripleDeltaRaw[], version = -1
  * @param triples The triples to append, annotated with addition: true or false as the given version.
  * @param version The version to append at, defaults to the last version
  */
-OstrichStorePrototype.appendSorted = function(triples: ITripleDeltaRaw[], version = -1): Promise<number> {
+OstrichStorePrototype.appendSorted = function(triples: IQuadDelta[], version = -1): Promise<number> {
   return new Promise((resolve, reject) => {
     if (this.closed) {
       return reject(new Error('Attempted to append to a closed OSTRICH store'));
@@ -353,14 +365,18 @@ OstrichStorePrototype.appendSorted = function(triples: ITripleDeltaRaw[], versio
     if (version === -1) {
       version = (<number> this.maxVersion) + 1;
     }
-    this._append(version, triples, (error: Error, insertedCount: number) => {
-      this._operations--;
-      this._finishOperation();
-      if (error) {
-        return reject(error);
-      }
-      resolve(insertedCount);
-    });
+    this._append(
+      version,
+      triples.map(triple => ({ addition: triple.addition, ...quadToStringQuad(triple) })),
+      (error: Error, insertedCount: number) => {
+        this._operations--;
+        this._finishOperation();
+        if (error) {
+          return reject(error);
+        }
+        resolve(insertedCount);
+      },
+    );
   });
 };
 
@@ -425,9 +441,12 @@ OstrichStorePrototype._closeInternal = function(remove: boolean, callback: (erro
  */
 export function fromPath(
   path: string,
-  readOnly?: boolean,
-  strategyName?: string,
-  strategyParameter?: string,
+  options?: {
+    readOnly?: boolean;
+    strategyName?: string;
+    strategyParameter?: string;
+    dataFactory?: RDF.DataFactory;
+  },
 ): Promise<OstrichStore> {
   return new Promise((resolve, reject) => {
     if (typeof path !== 'string' || path.length === 0) {
@@ -437,13 +456,17 @@ export function fromPath(
       path += '/';
     }
 
-    if (typeof strategyName !== 'string') {
-      strategyName = 'never';
-      strategyParameter = '0';
+    if (!options) {
+      options = {};
+    }
+
+    if (typeof options.strategyName !== 'string') {
+      options.strategyName = 'never';
+      options.strategyParameter = '0';
     }
 
     // eslint-disable-next-line no-sync
-    if (!readOnly && !fs.existsSync(path)) {
+    if (!options.readOnly && !fs.existsSync(path)) {
       try {
         // eslint-disable-next-line no-sync
         fs.mkdirSync(path);
@@ -455,9 +478,9 @@ export function fromPath(
     // Construct the native OstrichStore
     ostrichNative.createOstrichStore(
       path,
-      readOnly,
-      strategyName,
-      strategyParameter,
+      options.readOnly,
+      options.strategyName,
+      options.strategyParameter,
       (error: Error, document: OstrichStore) => {
         // Abort the creation if any error occurred
         if (error) {
@@ -471,11 +494,12 @@ export function fromPath(
           countTriplesDeltaMaterialized: true,
           searchTriplesVersion: true,
           countTriplesVersion: true,
-          appendVersionedTriples: !readOnly,
+          appendVersionedTriples: !options!.readOnly,
         });
-        document.readOnly = Boolean(readOnly);
+        document.readOnly = Boolean(options!.readOnly);
         document._operations = 0;
         document._operationsCallbacks = [];
+        document.dataFactory = options!.dataFactory || new DataFactory();
         resolve(document);
       },
     );

@@ -1,7 +1,9 @@
 import type { OstrichStore } from '../lib/ostrich';
+import { quadDelta } from '../lib/ostrich';
 
 const fs = require('fs');
 const path = require('path');
+const quad = require('rdf-quad');
 const ostrich = require('../lib/ostrich');
 
 // eslint-disable-next-line multiline-comment-style
@@ -72,31 +74,39 @@ const ostrich = require('../lib/ostrich');
  + <z> <z> "z"^^<http://example.org/literal> .
 */
 
-const dataV0 = [{ subject: 'a', predicate: 'a', object: '"a"^^<http://example.org/literal>', addition: true },
-  { subject: 'a', predicate: 'a', object: '"b"^^<http://example.org/literal>', addition: true },
-  { subject: 'a', predicate: 'b', object: 'a', addition: true },
-  { subject: 'a', predicate: 'b', object: 'c', addition: true },
-  { subject: 'a', predicate: 'b', object: 'd', addition: true },
-  { subject: 'a', predicate: 'b', object: 'f', addition: true },
-  { subject: 'a', predicate: 'b', object: 'z', addition: true },
-  { subject: 'c', predicate: 'c', object: 'c', addition: true }];
+const dataV0 = [
+  quadDelta(quad('a', 'a', '"a"^^<http://example.org/literal>'), true),
+  quadDelta(quad('a', 'a', '"b"^^<http://example.org/literal>'), true),
+  quadDelta(quad('a', 'b', 'a'), true),
+  quadDelta(quad('a', 'b', 'c'), true),
+  quadDelta(quad('a', 'b', 'd'), true),
+  quadDelta(quad('a', 'b', 'f'), true),
+  quadDelta(quad('a', 'b', 'z'), true),
+  quadDelta(quad('c', 'c', 'c'), true),
+];
 
-const dataV1 = [{ subject: 'a', predicate: 'a', object: '"b"^^<http://example.org/literal>', addition: false },
-  { subject: 'a', predicate: 'a', object: '"z"^^<http://example.org/literal>', addition: true },
-  { subject: 'a', predicate: 'b', object: 'a', addition: false },
-  { subject: 'a', predicate: 'b', object: 'g', addition: true },
-  { subject: 'a', predicate: 'b', object: 'z', addition: false },
-  { subject: 'f', predicate: 'f', object: 'f', addition: true },
-  { subject: 'z', predicate: 'z', object: 'z', addition: true }];
+const dataV1 = [
+  quadDelta(quad('a', 'a', '"b"^^<http://example.org/literal>'), false),
+  quadDelta(quad('a', 'a', '"z"^^<http://example.org/literal>'), true),
+  quadDelta(quad('a', 'b', 'a'), false),
+  quadDelta(quad('a', 'b', 'g'), true),
+  quadDelta(quad('a', 'b', 'z'), false),
+  quadDelta(quad('f', 'f', 'f'), true),
+  quadDelta(quad('z', 'z', 'z'), true),
+];
 
-const dataV2 = [{ subject: 'a', predicate: 'a', object: '"z"^^<http://example.org/literal>', addition: false },
-  { subject: 'f', predicate: 'f', object: 'f', addition: false },
-  { subject: 'f', predicate: 'r', object: 's', addition: true },
-  { subject: 'q', predicate: 'q', object: 'q', addition: true },
-  { subject: 'r', predicate: 'r', object: 'r', addition: true }];
+const dataV2 = [
+  quadDelta(quad('a', 'a', '"z"^^<http://example.org/literal>'), false),
+  quadDelta(quad('f', 'f', 'f'), false),
+  quadDelta(quad('f', 'r', 's'), true),
+  quadDelta(quad('q', 'q', 'q'), true),
+  quadDelta(quad('r', 'r', 'r'), true),
+];
 
-const dataV3 = [{ subject: 'z', predicate: 'z', object: 'z', addition: false },
-  { subject: 'z', predicate: 'z', object: '"z"^^<http://example.org/literal>', addition: true }];
+const dataV3 = [
+  quadDelta(quad('z', 'z', 'z'), false),
+  quadDelta(quad('z', 'z', '"z"^^<http://example.org/literal>'), true),
+];
 
 export async function initializeThreeVersions(tag: string): Promise<OstrichStore> {
   const ostrichStore = await ostrich.fromPath(`./test/test-${tag}.ostrich`, false);

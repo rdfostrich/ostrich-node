@@ -1,5 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import rdfSerializer from 'rdf-serialize';
-import { stringQuadToQuad } from 'rdf-string';
+import { stringToTerm } from 'rdf-string';
 import { quadToStringQuad as quadToStringQuadTtl } from 'rdf-string-ttl';
 import * as yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -57,10 +58,7 @@ const streamifyArray = require('streamify-array');
         );
         process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
         await new Promise<void>((resolve, reject) => rdfSerializer
-          .serialize(
-            streamifyArray(triples.map(stringQuad => stringQuadToQuad(stringQuad))),
-            { contentType: args.format },
-          )
+          .serialize(streamifyArray(triples), { contentType: args.format })
           .pipe(process.stdout)
           .on('error', reject)
           .on('end', resolve));
@@ -88,7 +86,7 @@ const streamifyArray = require('streamify-array');
         );
         process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
         for (const triple of triples) {
-          const stringTriple = quadToStringQuadTtl(stringQuadToQuad(triple));
+          const stringTriple = quadToStringQuadTtl(triple);
           console.log(`${triple.addition ? '+ ' : '- '} ${stringTriple.subject} ${stringTriple.predicate} ${stringTriple.object}`);
         }
       });
@@ -103,7 +101,7 @@ const streamifyArray = require('streamify-array');
         );
         process.stdout.write(`# Total matches: ${totalCount}${hasExactCount ? '' : ' (estimated)'}\n`);
         for (const triple of triples) {
-          const stringTriple = quadToStringQuadTtl(stringQuadToQuad(triple));
+          const stringTriple = quadToStringQuadTtl(triple);
           console.log(`${stringTriple.subject} ${stringTriple.predicate} ${stringTriple.object}`);
           console.log(`    >> ${JSON.stringify(triple.versions)}`);
         }
@@ -141,16 +139,16 @@ async function queryContext(
   format: string | undefined,
   queryCb: (
     store: OstrichStore,
-    subject: string | null,
-    predicate: string | null,
-    object: string | null,
+    subject: RDF.Term | null,
+    predicate: RDF.Term | null,
+    object: RDF.Term | null,
   ) => Promise<void>,
 ): Promise<void> {
   // Parse query
   const parts = /^\s*<?([^\s>]*)>?\s*<?([^\s>]*)>?\s*<?([^]*?)>?\s*$/u.exec(query);
-  const subject = parts && !parts[1].startsWith('?') && parts[1] || null;
-  const predicate = parts && !parts[2].startsWith('?') && parts[2] || null;
-  const object = parts && !parts[3].startsWith('?') && parts[3] || null;
+  const subject = parts && !parts[1].startsWith('?') && stringToTerm(parts[1]) || null;
+  const predicate = parts && !parts[2].startsWith('?') && stringToTerm(parts[2]) || null;
+  const object = parts && !parts[3].startsWith('?') && stringToTerm(parts[3]) || null;
 
   // Load Ostrich
   const store = await fromPath(archive);

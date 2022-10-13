@@ -133,7 +133,7 @@ describe('ostrich', () => {
       });
 
       it('finish closing when the query ends', async() => {
-        lastCb();
+        lastCb(null, []);
 
         await expect(vmQueryPromise).resolves.toBeTruthy();
         await expect(closePromise1).resolves.toBeUndefined();

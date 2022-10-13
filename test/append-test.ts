@@ -1,7 +1,8 @@
 import 'jest-rdf';
 import type { OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import { fromPath, quadDelta } from '../lib/ostrich';
 const _ = require('lodash');
+const quad = require('rdf-quad');
 
 describe('append', () => {
   describe('An ostrich store for an example ostrich path', () => {
@@ -10,7 +11,7 @@ describe('append', () => {
         let document: OstrichStore;
 
         it('should throw if the store is closed', async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           await document.close();
 
           await expect(document.append([], 0))
@@ -21,7 +22,7 @@ describe('append', () => {
         });
 
         it('should throw if the store is read-only', async() => {
-          document = await fromPath('./test/test-temp.ostrich', true);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: true });
 
           await expect(document.append([], 0))
             .rejects.toThrow('Attempted to append to an OSTRICH store in read-only mode');
@@ -35,13 +36,13 @@ describe('append', () => {
         let document: OstrichStore;
         let count: number;
         const triplesActual = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
+          quadDelta(quad('a', 'a', 'c'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count = await document.append(triplesActual, 0);
         });
 
@@ -70,13 +71,13 @@ describe('append', () => {
         let document: OstrichStore;
         let count: number;
         const triplesActual = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
+          quadDelta(quad('a', 'a', 'c'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count = await document.append(triplesActual);
         });
 
@@ -105,13 +106,13 @@ describe('append', () => {
         let document: OstrichStore;
         let count: number;
         const triplesActual = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
+          quadDelta(quad('a', 'a', 'c'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count = await document.appendSorted(triplesActual);
         });
 
@@ -139,14 +140,14 @@ describe('append', () => {
       describe('with 4 triples for version 0, including deletions', () => {
         let document: OstrichStore;
         const triplesActual = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: false },
-          { subject: 'a', predicate: 'a', object: 'b', addition: false },
-          { subject: 'a', predicate: 'a', object: 'd', addition: true },
-          { subject: 'a', predicate: 'a', object: 'e', addition: true },
+          quadDelta(quad('a', 'a', 'a'), false),
+          quadDelta(quad('a', 'a', 'b'), false),
+          quadDelta(quad('a', 'a', 'd'), true),
+          quadDelta(quad('a', 'a', 'e'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich');
         });
 
         afterEach(async() => {
@@ -164,19 +165,19 @@ describe('append', () => {
         let document: OstrichStore;
         let count = 0;
         const triples0 = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
+          quadDelta(quad('a', 'a', 'c'), true),
         ];
         const triples1 = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: false },
-          { subject: 'a', predicate: 'a', object: 'b', addition: false },
-          { subject: 'a', predicate: 'a', object: 'd', addition: true },
-          { subject: 'a', predicate: 'a', object: 'e', addition: true },
+          quadDelta(quad('a', 'a', 'a'), false),
+          quadDelta(quad('a', 'a', 'b'), false),
+          quadDelta(quad('a', 'a', 'd'), true),
+          quadDelta(quad('a', 'a', 'e'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count += await document.append(triples0, 0);
           count += await document.append(triples1, 1);
         });
@@ -217,19 +218,19 @@ describe('append', () => {
         let document: OstrichStore;
         let count = 0;
         const triples0 = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
+          quadDelta(quad('a', 'a', 'c'), true),
         ];
         const triples1 = [
-          { subject: 'a', predicate: 'a', object: 'a', addition: false },
-          { subject: 'a', predicate: 'a', object: 'b', addition: false },
-          { subject: 'a', predicate: 'a', object: 'd', addition: true },
-          { subject: 'a', predicate: 'a', object: 'e', addition: true },
+          quadDelta(quad('a', 'a', 'a'), false),
+          quadDelta(quad('a', 'a', 'b'), false),
+          quadDelta(quad('a', 'a', 'd'), true),
+          quadDelta(quad('a', 'a', 'e'), true),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count += await document.append(triples0);
           count += await document.append(triples1);
         });
@@ -270,19 +271,19 @@ describe('append', () => {
         let document: OstrichStore;
         let count = 0;
         const triples0 = [
-          { subject: 'a', predicate: 'a', object: 'c', addition: true },
-          { subject: 'a', predicate: 'a', object: 'a', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: true },
+          quadDelta(quad('a', 'a', 'c'), true),
+          quadDelta(quad('a', 'a', 'a'), true),
+          quadDelta(quad('a', 'a', 'b'), true),
         ];
         const triples1 = [
-          { subject: 'a', predicate: 'a', object: 'e', addition: true },
-          { subject: 'a', predicate: 'a', object: 'a', addition: false },
-          { subject: 'a', predicate: 'a', object: 'd', addition: true },
-          { subject: 'a', predicate: 'a', object: 'b', addition: false },
+          quadDelta(quad('a', 'a', 'e'), true),
+          quadDelta(quad('a', 'a', 'a'), false),
+          quadDelta(quad('a', 'a', 'd'), true),
+          quadDelta(quad('a', 'a', 'b'), false),
         ];
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
           count += await document.append(triples0, 0);
           count += await document.append(triples1, 1);
         });
@@ -324,7 +325,7 @@ describe('append', () => {
         let count = 0;
 
         beforeEach(async() => {
-          document = await fromPath('./test/test-temp.ostrich', false);
+          document = await fromPath('./test/test-temp.ostrich', { readOnly: false });
         });
 
         afterEach(async() => {
@@ -335,9 +336,9 @@ describe('append', () => {
         it('should have inserted 33 triples', async() => {
           for (let v = 0; v < 10; v++) {
             const triples = [
-              { subject: 'a', predicate: 'a', object: `a${v}`, addition: true },
-              { subject: 'a', predicate: 'a', object: `b${v}`, addition: true },
-              { subject: 'a', predicate: 'a', object: `c${v}`, addition: true },
+              quadDelta(quad('a', 'a', `a${v}`), true),
+              quadDelta(quad('a', 'a', `b${v}`), true),
+              quadDelta(quad('a', 'a', `c${v}`), true),
             ];
             count += await document.append(triples, v);
           }

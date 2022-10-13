@@ -1,7 +1,12 @@
 import 'jest-rdf';
-import type { ITripleRaw, OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+import type { OstrichStore } from '../lib/ostrich';
+import { fromPath, quadVersion } from '../lib/ostrich';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
+const quad = require('rdf-quad');
+
+const DF = new DataFactory();
 
 // eslint-disable-next-line multiline-comment-style
 /*
@@ -39,7 +44,7 @@ describe('version', () => {
 
     it('should throw when the store has no versions', async() => {
       cleanUp('vq');
-      document = await fromPath(`./test/test-vq.ostrich`, false);
+      document = await fromPath(`./test/test-vq.ostrich`, { readOnly: false });
 
       await expect(document.searchTriplesVersion(null, null, null))
         .rejects.toThrow('Attempted to query an OSTRICH store without versions');
@@ -96,10 +101,10 @@ describe('version', () => {
     describe('being searched', () => {
       describe('with a non-existing pattern', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesVersion('1', null, null));
+            .searchTriplesVersion(DF.namedNode('1'), null, null));
         });
 
         it('should return an array with matches', () => {
@@ -114,7 +119,7 @@ describe('version', () => {
       describe('with pattern null null null', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
             .searchTriplesVersion(null, null, null));
@@ -122,66 +127,21 @@ describe('version', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"a"^^http://example.org/literal',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              versions: [ 1 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'd',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'f',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              versions: [ 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              versions: [ 0 ]},
-            { subject: 'c',
-              predicate: 'c',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              versions: [ 1 ]},
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              versions: [ 2 ]},
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              versions: [ 2 ]},
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              versions: [ 2 ]},
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              versions: [ 1, 2 ]},
+            quadVersion(quad('a', 'a', '"a"^^http://example.org/literal'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'a', '"b"^^http://example.org/literal'), [ 0 ]),
+            quadVersion(quad('a', 'a', '"z"^^http://example.org/literal'), [ 1 ]),
+            quadVersion(quad('a', 'b', 'a'), [ 0 ]),
+            quadVersion(quad('a', 'b', 'c'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'd'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'f'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'g'), [ 1, 2 ]),
+            quadVersion(quad('a', 'b', 'z'), [ 0 ]),
+            quadVersion(quad('c', 'c', 'c'), [ 0, 1, 2 ]),
+            quadVersion(quad('f', 'f', 'f'), [ 1 ]),
+            quadVersion(quad('f', 'r', 's'), [ 2 ]),
+            quadVersion(quad('q', 'q', 'q'), [ 2 ]),
+            quadVersion(quad('r', 'r', 'r'), [ 2 ]),
+            quadVersion(quad('z', 'z', 'z'), [ 1, 2 ]),
           ]);
         });
 
@@ -197,7 +157,7 @@ describe('version', () => {
       describe('with pattern null null null, offset 0 and limit 5', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
             .searchTriplesVersion(null, null, null, { offset: 0, limit: 5 }));
@@ -205,26 +165,11 @@ describe('version', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"a"^^http://example.org/literal',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              versions: [ 1 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
+            quadVersion(quad('a', 'a', '"a"^^http://example.org/literal'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'a', '"b"^^http://example.org/literal'), [ 0 ]),
+            quadVersion(quad('a', 'a', '"z"^^http://example.org/literal'), [ 1 ]),
+            quadVersion(quad('a', 'b', 'a'), [ 0 ]),
+            quadVersion(quad('a', 'b', 'c'), [ 0, 1, 2 ]),
           ]);
         });
 
@@ -240,7 +185,7 @@ describe('version', () => {
       describe('with pattern null null null, offset 2 and limit 5', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
             .searchTriplesVersion(null, null, null, { offset: 2, limit: 5 }));
@@ -248,26 +193,11 @@ describe('version', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              versions: [ 1 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'd',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'f',
-              versions: [ 0, 1, 2 ]},
+            quadVersion(quad('a', 'a', '"z"^^http://example.org/literal'), [ 1 ]),
+            quadVersion(quad('a', 'b', 'a'), [ 0 ]),
+            quadVersion(quad('a', 'b', 'c'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'd'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'f'), [ 0, 1, 2 ]),
           ]);
         });
 
@@ -284,7 +214,7 @@ describe('version', () => {
       describe.skip('with pattern null null null, offset 20 and limit 5', () => { // TODO: fix me
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
             .searchTriplesVersion(null, null, null, { offset: 20, limit: 5 }));
@@ -306,22 +236,16 @@ describe('version', () => {
       describe('with pattern f null null', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion('f', null, null));
+            .searchTriplesVersion(DF.namedNode('f'), null, null));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              versions: [ 1 ]},
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              versions: [ 2 ]},
+            quadVersion(quad('f', 'f', 'f'), [ 1 ]),
+            quadVersion(quad('f', 'r', 's'), [ 2 ]),
           ]);
         });
 
@@ -337,18 +261,15 @@ describe('version', () => {
       describe('with pattern c null null, offset 0 and limit 1', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion('c', null, null, { offset: 0, limit: 1 }));
+            .searchTriplesVersion(DF.namedNode('c'), null, null, { offset: 0, limit: 1 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'c',
-              predicate: 'c',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
+            quadVersion(quad('c', 'c', 'c'), [ 0, 1, 2 ]),
           ]);
         });
 
@@ -365,10 +286,10 @@ describe('version', () => {
       describe.skip('with pattern c null null, offset 10 and limit 1', () => { // TODO: fix me
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion('c', null, null, { offset: 10, limit: 1 }));
+            .searchTriplesVersion(DF.namedNode('c'), null, null, { offset: 10, limit: 1 }));
         });
 
         it('should return an array with matches', () => {
@@ -387,50 +308,23 @@ describe('version', () => {
       describe('with pattern a ?p ?o', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion('a', '?p', '?o'));
+            .searchTriplesVersion(DF.namedNode('a'), DF.variable('p'), DF.variable('o')));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"a"^^http://example.org/literal',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              versions: [ 1 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'd',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'f',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              versions: [ 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              versions: [ 0 ]},
+            quadVersion(quad('a', 'a', '"a"^^http://example.org/literal'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'a', '"b"^^http://example.org/literal'), [ 0 ]),
+            quadVersion(quad('a', 'a', '"z"^^http://example.org/literal'), [ 1 ]),
+            quadVersion(quad('a', 'b', 'a'), [ 0 ]),
+            quadVersion(quad('a', 'b', 'c'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'd'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'f'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'g'), [ 1, 2 ]),
+            quadVersion(quad('a', 'b', 'z'), [ 0 ]),
           ]);
         });
 
@@ -446,38 +340,20 @@ describe('version', () => {
       describe('with pattern null b null', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion(null, 'b', null));
+            .searchTriplesVersion(null, DF.namedNode('b'), null));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              versions: [ 0 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'c',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'd',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'f',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              versions: [ 1, 2 ]},
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              versions: [ 0 ]},
+            quadVersion(quad('a', 'b', 'a'), [ 0 ]),
+            quadVersion(quad('a', 'b', 'c'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'd'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'f'), [ 0, 1, 2 ]),
+            quadVersion(quad('a', 'b', 'g'), [ 1, 2 ]),
+            quadVersion(quad('a', 'b', 'z'), [ 0 ]),
           ]);
         });
 
@@ -493,10 +369,10 @@ describe('version', () => {
       describe('with pattern null ex:p3 null', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion(null, 'http://example.org/p3', null));
+            .searchTriplesVersion(null, DF.namedNode('http://example.org/p3'), null));
         });
 
         it('should return an array with no matches', () => {
@@ -515,18 +391,15 @@ describe('version', () => {
       describe('with pattern null null "a"^^http://example.org/literal', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion(null, null, '"a"^^http://example.org/literal'));
+            .searchTriplesVersion(null, null, DF.literal('a', DF.namedNode('http://example.org/literal'))));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"a"^^http://example.org/literal',
-              versions: [ 0, 1, 2 ]},
+            quadVersion(quad('a', 'a', '"a"^^http://example.org/literal'), [ 0, 1, 2 ]),
           ]);
         });
 
@@ -542,22 +415,16 @@ describe('version', () => {
       describe('with pattern null null f', () => {
         let hasExactCount: boolean;
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount, hasExactCount } = await document
-            .searchTriplesVersion(null, null, 'f'));
+            .searchTriplesVersion(null, null, DF.namedNode('f')));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'f',
-              versions: [ 0, 1, 2 ]},
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              versions: [ 1 ]},
+            quadVersion(quad('a', 'b', 'f'), [ 0, 1, 2 ]),
+            quadVersion(quad('f', 'f', 'f'), [ 1 ]),
           ]);
         });
 
@@ -577,7 +444,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion('1', null, null));
+            .countTriplesVersion(DF.namedNode('1'), null, null));
         });
 
         it('should return 0', () => {
@@ -611,7 +478,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion('a', null, null));
+            .countTriplesVersion(DF.namedNode('a'), null, null));
         });
 
         it('should return 9', () => {
@@ -628,7 +495,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion(null, 'b', null));
+            .countTriplesVersion(null, DF.namedNode('b'), null));
         });
 
         it('should return 6', () => {
@@ -645,7 +512,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion(null, 'http://example.org/p3', null));
+            .countTriplesVersion(null, DF.namedNode('http://example.org/p3'), null));
         });
 
         it('should return 0', () => {
@@ -662,7 +529,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion(null, null, 'f'));
+            .countTriplesVersion(null, null, DF.namedNode('f')));
         });
 
         it('should return 2', () => {
@@ -679,7 +546,7 @@ describe('version', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount, hasExactCount } = await document
-            .countTriplesVersion(null, null, '"a"^^http://example.org/literal'));
+            .countTriplesVersion(null, null, DF.literal('a', DF.namedNode('http://example.org/literal'))));
         });
 
         it('should return 1', () => {

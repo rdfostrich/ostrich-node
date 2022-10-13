@@ -1,7 +1,12 @@
 import 'jest-rdf';
-import type { ITripleRaw, OstrichStore } from '../lib/ostrich';
-import { fromPath } from '../lib/ostrich';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+import type { OstrichStore } from '../lib/ostrich';
+import { fromPath, quadDelta } from '../lib/ostrich';
 import { cleanUp, closeAndCleanUp, initializeThreeVersions } from './prepare-ostrich';
+const quad = require('rdf-quad');
+
+const DF = new DataFactory();
 
 // eslint-disable-next-line multiline-comment-style
 /*
@@ -50,7 +55,7 @@ describe('delta materialization', () => {
 
     it('should throw when the store has no versions', async() => {
       cleanUp('dm');
-      document = await fromPath(`./test/test-dm.ostrich`, false);
+      document = await fromPath(`./test/test-dm.ostrich`, { readOnly: false });
 
       await expect(document.searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }))
         .rejects.toThrow('Attempted to query an OSTRICH store without versions');
@@ -129,10 +134,10 @@ describe('delta materialization', () => {
     describe('being searched', () => {
       describe('with a non-existing pattern between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('1', null, null, { versionStart: 0, versionEnd: 1 }));
+            .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 0, versionEnd: 1 }));
         });
 
         it('should return an array with matches', () => {
@@ -146,10 +151,10 @@ describe('delta materialization', () => {
 
       describe('with a non-existing pattern between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('1', null, null, { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 1, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
@@ -163,10 +168,10 @@ describe('delta materialization', () => {
 
       describe('with a non-existing pattern between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('1', null, null, { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(DF.namedNode('1'), null, null, { versionStart: 0, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
@@ -180,7 +185,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[]; // , hasExactCount;
+        let triples: RDF.Quad[]; // , hasExactCount;
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1 }));
@@ -188,34 +193,13 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: true },
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              addition: true },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), true),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
+            quadDelta(quad('f', 'f', 'f'), true),
+            quadDelta(quad('z', 'z', 'z'), true),
           ]);
         });
 
@@ -226,7 +210,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2 }));
@@ -234,26 +218,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: false },
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              addition: true },
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              addition: true },
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), false),
+            quadDelta(quad('f', 'f', 'f'), false),
+            quadDelta(quad('f', 'r', 's'), true),
+            quadDelta(quad('q', 'q', 'q'), true),
+            quadDelta(quad('r', 'r', 'r'), true),
           ]);
         });
 
@@ -264,7 +233,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2 }));
@@ -272,38 +241,14 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              addition: true },
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              addition: true },
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              addition: true },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
+            quadDelta(quad('f', 'r', 's'), true),
+            quadDelta(quad('q', 'q', 'q'), true),
+            quadDelta(quad('r', 'r', 'r'), true),
+            quadDelta(quad('z', 'z', 'z'), true),
           ]);
         });
 
@@ -314,7 +259,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 0 and limit 5 between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1, offset: 0, limit: 5 }));
@@ -322,26 +267,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), true),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
           ]);
         });
 
@@ -352,7 +282,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 0 and limit 5 between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2, offset: 0, limit: 5 }));
@@ -360,26 +290,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: false },
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              addition: true },
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              addition: true },
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), false),
+            quadDelta(quad('f', 'f', 'f'), false),
+            quadDelta(quad('f', 'r', 's'), true),
+            quadDelta(quad('q', 'q', 'q'), true),
+            quadDelta(quad('r', 'r', 'r'), true),
           ]);
         });
 
@@ -390,7 +305,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 0 and limit 5 between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 5 }));
@@ -398,26 +313,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
+            quadDelta(quad('f', 'r', 's'), true),
           ]);
         });
 
@@ -428,7 +328,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 2 and limit 5 between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 1, offset: 2, limit: 5 }));
@@ -436,26 +336,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: true },
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              addition: true },
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
+            quadDelta(quad('f', 'f', 'f'), true),
+            quadDelta(quad('z', 'z', 'z'), true),
           ]);
         });
 
@@ -466,7 +351,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 2 and limit 5 between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 1, versionEnd: 2, offset: 2, limit: 5 }));
@@ -474,18 +359,9 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              addition: true },
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              addition: true },
+            quadDelta(quad('f', 'r', 's'), true),
+            quadDelta(quad('q', 'q', 'q'), true),
+            quadDelta(quad('r', 'r', 'r'), true),
           ]);
         });
 
@@ -496,7 +372,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 2 and limit 5 between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(null, null, null, { versionStart: 0, versionEnd: 2, offset: 2, limit: 5 }));
@@ -504,26 +380,11 @@ describe('delta materialization', () => {
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
-            { subject: 'q',
-              predicate: 'q',
-              object: 'q',
-              addition: true },
-            { subject: 'r',
-              predicate: 'r',
-              object: 'r',
-              addition: true },
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
+            quadDelta(quad('f', 'r', 's'), true),
+            quadDelta(quad('q', 'q', 'q'), true),
+            quadDelta(quad('r', 'r', 'r'), true),
           ]);
         });
 
@@ -534,7 +395,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 10 and limit 5 between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
@@ -553,7 +414,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 10 and limit 5 between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
@@ -572,7 +433,7 @@ describe('delta materialization', () => {
 
       describe('with pattern null null null, offset 10 and limit 5 between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
@@ -591,20 +452,17 @@ describe('delta materialization', () => {
 
       describe('with pattern f null null between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
-              'f', null, null, { versionStart: 0, versionEnd: 1 },
+              DF.namedNode('f'), null, null, { versionStart: 0, versionEnd: 1 },
             ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: true },
+            quadDelta(quad('f', 'f', 'f'), true),
           ]);
         });
 
@@ -615,22 +473,16 @@ describe('delta materialization', () => {
 
       describe('with pattern f null null between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('f', null, null, { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(DF.namedNode('f'), null, null, { versionStart: 1, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: false },
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
+            quadDelta(quad('f', 'f', 'f'), false),
+            quadDelta(quad('f', 'r', 's'), true),
           ]);
         });
 
@@ -641,18 +493,15 @@ describe('delta materialization', () => {
 
       describe('with pattern f null null between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('f', null, null, { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(DF.namedNode('f'), null, null, { versionStart: 0, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'r',
-              object: 's',
-              addition: true },
+            quadDelta(quad('f', 'r', 's'), true),
           ]);
         });
 
@@ -663,18 +512,17 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 0 and limit 1 between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 0, versionEnd: 1, offset: 0, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 1, offset: 0, limit: 1 },
+            ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              addition: true },
+            quadDelta(quad('z', 'z', 'z'), true),
           ]);
         });
 
@@ -685,10 +533,12 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 0 and limit 1 between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 1, versionEnd: 2, offset: 0, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 1, versionEnd: 2, offset: 0, limit: 1 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -702,18 +552,17 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 0 and limit 1 between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 2, offset: 0, limit: 1 },
+            ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'z',
-              predicate: 'z',
-              object: 'z',
-              addition: true },
+            quadDelta(quad('z', 'z', 'z'), true),
           ]);
         });
 
@@ -724,10 +573,12 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 10 and limit 1 between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 0, versionEnd: 1, offset: 10, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 1, offset: 10, limit: 1 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -741,10 +592,12 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 10 and limit 1 between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 1, versionEnd: 2, offset: 10, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 1, versionEnd: 2, offset: 10, limit: 1 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -758,10 +611,12 @@ describe('delta materialization', () => {
 
       describe('with pattern z null null, offset 10 and limit 1 between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('z', null, null, { versionStart: 0, versionEnd: 2, offset: 10, limit: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('z'), null, null, { versionStart: 0, versionEnd: 2, offset: 10, limit: 1 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -775,34 +630,21 @@ describe('delta materialization', () => {
 
       describe('with pattern a ?p ?o between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('a', '?p', '?o', { versionStart: 0, versionEnd: 1 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 0, versionEnd: 1 },
+            ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), true),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
           ]);
         });
 
@@ -813,18 +655,17 @@ describe('delta materialization', () => {
 
       describe('with pattern a ?p ?o between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('a', '?p', '?o', { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 1, versionEnd: 2 },
+            ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"z"^^http://example.org/literal',
-              addition: false },
+            quadDelta(quad('a', 'a', '"z"^^http://example.org/literal'), false),
           ]);
         });
 
@@ -835,30 +676,20 @@ describe('delta materialization', () => {
 
       describe('with pattern a ?p ?o between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized('a', '?p', '?o', { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(
+              DF.namedNode('a'), DF.variable('p'), DF.variable('o'), { versionStart: 0, versionEnd: 2 },
+            ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
           ]);
         });
 
@@ -869,26 +700,17 @@ describe('delta materialization', () => {
 
       describe('with pattern null b null between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'b', null, { versionStart: 0, versionEnd: 1 }));
+            .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 0, versionEnd: 1 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
           ]);
         });
 
@@ -899,10 +721,10 @@ describe('delta materialization', () => {
 
       describe('with pattern null b null between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'b', null, { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 1, versionEnd: 2 }));
         });
 
         it('should return an array with no matches', () => {
@@ -916,26 +738,17 @@ describe('delta materialization', () => {
 
       describe('with pattern null b null between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'b', null, { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(null, DF.namedNode('b'), null, { versionStart: 0, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'b',
-              object: 'a',
-              addition: false },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'g',
-              addition: true },
-            { subject: 'a',
-              predicate: 'b',
-              object: 'z',
-              addition: false },
+            quadDelta(quad('a', 'b', 'a'), false),
+            quadDelta(quad('a', 'b', 'g'), true),
+            quadDelta(quad('a', 'b', 'z'), false),
           ]);
         });
 
@@ -946,10 +759,12 @@ describe('delta materialization', () => {
 
       describe('with pattern null ex:p3 null between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'http://example.org/p3', null, { versionStart: 0, versionEnd: 1 }));
+            .searchTriplesDeltaMaterialized(
+              null, DF.namedNode('http://example.org/p3'), null, { versionStart: 0, versionEnd: 1 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -963,10 +778,12 @@ describe('delta materialization', () => {
 
       describe('with pattern null ex:p3 null between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'http://example.org/p3', null, { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(
+              null, DF.namedNode('http://example.org/p3'), null, { versionStart: 1, versionEnd: 2 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -980,10 +797,12 @@ describe('delta materialization', () => {
 
       describe('with pattern null ex:p3 null between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, 'http://example.org/p3', null, { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(
+              null, DF.namedNode('http://example.org/p3'), null, { versionStart: 0, versionEnd: 2 },
+            ));
         });
 
         it('should return an array with no matches', () => {
@@ -997,20 +816,20 @@ describe('delta materialization', () => {
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
-              null, null, '"b"^^http://example.org/literal', { versionStart: 0, versionEnd: 1 },
+              null,
+              null,
+              DF.literal('b', DF.namedNode('http://example.org/literal')),
+              { versionStart: 0, versionEnd: 1 },
             ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
           ]);
         });
 
@@ -1021,11 +840,14 @@ describe('delta materialization', () => {
 
       describe('with pattern null null "b"^^http://example.org/literal between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
-              null, null, '"b"^^http://example.org/literal', { versionStart: 1, versionEnd: 2 },
+              null,
+              null,
+              DF.literal('b', DF.namedNode('http://example.org/literal')),
+              { versionStart: 1, versionEnd: 2 },
             ));
         });
 
@@ -1040,20 +862,20 @@ describe('delta materialization', () => {
 
       describe('with pattern null null "b"^^http://example.org/literal between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
             .searchTriplesDeltaMaterialized(
-              null, null, '"b"^^http://example.org/literal', { versionStart: 0, versionEnd: 2 },
+              null,
+              null,
+              DF.literal('b', DF.namedNode('http://example.org/literal')),
+              { versionStart: 0, versionEnd: 2 },
             ));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'a',
-              predicate: 'a',
-              object: '"b"^^http://example.org/literal',
-              addition: false },
+            quadDelta(quad('a', 'a', '"b"^^http://example.org/literal'), false),
           ]);
         });
 
@@ -1064,18 +886,15 @@ describe('delta materialization', () => {
 
       describe('with pattern null null f between version 0 and 1', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, null, 'f', { versionStart: 0, versionEnd: 1 }));
+            .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 0, versionEnd: 1 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: true },
+            quadDelta(quad('f', 'f', 'f'), true),
           ]);
         });
 
@@ -1086,18 +905,15 @@ describe('delta materialization', () => {
 
       describe('with pattern null null f between version 1 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, null, 'f', { versionStart: 1, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 1, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
           expect(triples).toEqual([
-            { subject: 'f',
-              predicate: 'f',
-              object: 'f',
-              addition: false },
+            quadDelta(quad('f', 'f', 'f'), false),
           ]);
         });
 
@@ -1108,10 +924,10 @@ describe('delta materialization', () => {
 
       describe('with pattern null null f between version 0 and 2', () => {
         let totalCount: number;
-        let triples: ITripleRaw[];
+        let triples: RDF.Quad[];
         beforeAll(async() => {
           ({ triples, totalCount } = await document
-            .searchTriplesDeltaMaterialized(null, null, 'f', { versionStart: 0, versionEnd: 2 }));
+            .searchTriplesDeltaMaterialized(null, null, DF.namedNode('f'), { versionStart: 0, versionEnd: 2 }));
         });
 
         it('should return an array with matches', () => {
@@ -1129,7 +945,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('1', null, null, 0, 1));
+            .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 0, 1));
         });
 
         it('should return 0', () => {
@@ -1141,7 +957,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('1', null, null, 1, 2));
+            .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 1, 2));
         });
 
         it('should return 0', () => {
@@ -1153,7 +969,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('1', null, null, 0, 2));
+            .countTriplesDeltaMaterialized(DF.namedNode('1'), null, null, 0, 2));
         });
 
         it('should return 0', () => {
@@ -1201,7 +1017,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('a', null, null, 0, 1));
+            .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 0, 1));
         });
 
         it('should return 5', () => {
@@ -1213,7 +1029,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('a', null, null, 1, 2));
+            .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 1, 2));
         });
 
         it('should return 9', () => {
@@ -1225,7 +1041,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized('a', null, null, 0, 2));
+            .countTriplesDeltaMaterialized(DF.namedNode('a'), null, null, 0, 2));
         });
 
         it('should return 4', () => {
@@ -1237,7 +1053,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'b', null, 0, 1));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 0, 1));
         });
 
         it('should return 3', () => {
@@ -1249,7 +1065,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'b', null, 1, 2));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 1, 2));
         });
 
         it('should return 6', () => {
@@ -1261,7 +1077,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'b', null, 0, 2));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('b'), null, 0, 2));
         });
 
         it('should return 3', () => {
@@ -1273,7 +1089,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'http://example.org/p3', null, 0, 1));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 0, 1));
         });
 
         it('should return 0', () => {
@@ -1285,7 +1101,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'http://example.org/p3', null, 1, 2));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 1, 2));
         });
 
         it('should return 0', () => {
@@ -1297,7 +1113,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, 'http://example.org/p3', null, 0, 2));
+            .countTriplesDeltaMaterialized(null, DF.namedNode('http://example.org/p3'), null, 0, 2));
         });
 
         it('should return 0', () => {
@@ -1309,7 +1125,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, 'f', 0, 1));
+            .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 0, 1));
         });
 
         it('should return 1', () => {
@@ -1321,7 +1137,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, 'f', 1, 2));
+            .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 1, 2));
         });
 
         it('should return 1', () => {
@@ -1333,7 +1149,7 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, 'f', 0, 2));
+            .countTriplesDeltaMaterialized(null, null, DF.namedNode('f'), 0, 2));
         });
 
         it('should return 0', () => {
@@ -1345,7 +1161,9 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, '"b"^^http://example.org/literal', 0, 1));
+            .countTriplesDeltaMaterialized(
+              null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 0, 1,
+            ));
         });
 
         it('should return 1', () => {
@@ -1357,7 +1175,9 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, '"b"^^http://example.org/literal', 1, 2));
+            .countTriplesDeltaMaterialized(
+              null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 1, 2,
+            ));
         });
 
         it('should return 2', () => {
@@ -1369,7 +1189,9 @@ describe('delta materialization', () => {
         let totalCount: number;
         beforeAll(async() => {
           ({ totalCount } = await document
-            .countTriplesDeltaMaterialized(null, null, '"b"^^http://example.org/literal', 0, 2));
+            .countTriplesDeltaMaterialized(
+              null, null, DF.literal('b', DF.namedNode('http://example.org/literal')), 0, 2,
+            ));
         });
 
         it('should return 1', () => {

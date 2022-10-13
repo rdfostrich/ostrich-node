@@ -57,10 +57,12 @@
     "install": "cmake-js compile"
   },
   "dependencies": {
+    "@rdfjs/types": "*",
     "@types/yargs": "^17.0.13",
     "boost-lib": "^0.11.3",
     "cmake-js": "^6.3.2",
     "nan": "^2.16.0",
+    "rdf-data-factory": "^1.1.1",
     "rdf-serialize": "^2.0.0",
     "rdf-string": "^1.6.1",
     "rdf-string-ttl": "^1.2.0",
@@ -81,11 +83,11 @@
     "eslint-plugin-unused-imports": "^1.0.0",
     "jest": "^27.0.0",
     "jest-rdf": "^1.5.0",
-    "lodash": "^4.17.21",
     "manual-git-changelog": "^1.0.0",
     "pre-commit": "^1.2.2",
     "ts-jest": "^27.0.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.2",
+    "rdf-quad": "^1.5.0"
   },
   "pre-commit": [
     "build",
