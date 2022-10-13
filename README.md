@@ -194,27 +194,23 @@ await ostrichStore.close();
 Inserts a new version into the store, with the given optional version id and an array of triples, annotated with `addition: true` or `addition: false`.
 In the first version (0), all triples MUST be additions.
 
+The triples that are appended can be created using the utility function `quadDelta`,
+which accepts an RDF/JS quad, and a flag indicating if it's an addition or not.
+
 ```JavaScript
-import { fromPath } from 'ostrich-bindings';
+import { fromPath, quadDelta } from 'ostrich-bindings';
 import { DataFactory } from 'rdf-data-factory';
 
+const DF: RDF.DataFactory = new DataFactory();
 const store = await fromPath('./test/test.ostrich', { readOnly: false });
 
-const { totalCount } = await ostrichStore.append([
-    quadDelta()
+const { insertedCount } = await ostrichStore.append([
+    quadDelta(DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')), true),
+    quadDelta(DF.quad(DF.namedNode('a'), DF.namedNode('d'), DF.namedNode('c')), true),
 ]);
-console.log('Approximately ' + totalCount + ' triples match the pattern in all versions.');
+console.log('Inserted ' + insertedCount + ' triples in version ' + store.maxVersion);
 
 await ostrichStore.close();
-
-
-ostrich.fromPath('./test/test.ostrich', false, function (error, ostrichStore) {
-  ostrichStore.append(0, [{ subject: 'a', predicate: 'b', object: 'c', addition: true }, { subject: 'a', predicate: 'b', object: 'd', addition: true }],
-    function (error, insertedCount) {
-      console.log('Inserted ' + insertedCount + ' triples in version ' + ostrichStore.store.maxVersion);
-      ostrichStore.close();
-    });
-});
 ```
 
 Note: if the array of triples is already sorted in SPO-order,
