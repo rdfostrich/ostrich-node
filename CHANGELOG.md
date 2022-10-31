@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.0-beta.2"></a>
+## [v2.0.0-beta.2](https://github.com/rdfostrich/ostrich-node/compare/v2.0.0-beta.1...v2.0.0-beta.2) - 2022-10-31
+
+### Fixed
+* [Fix invalid main entry in package.json](https://github.com/rdfostrich/ostrich-node/commit/473e05b397311d514d559b32c7f1c1bd669d23d5)
+
 <a name="v2.0.0-beta.1"></a>
 ## [v2.0.0-beta.1](https://github.com/rdfostrich/ostrich-node/compare/v2.0.0-beta.0...v2.0.0-beta.1) - 2022-10-31
 

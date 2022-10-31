@@ -1,6 +1,6 @@
 {
   "name": "ostrich-bindings",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Native bindings to access OSTRICH RDF triple archives",
   "author": "Ruben Taelman <rubensworks@gmail.com>, Miel Vander Sande <miel.vandersande@ugent.be>, Olivier Pelgrin <olivier@cs.aau.dk>",
   "keywords": [
