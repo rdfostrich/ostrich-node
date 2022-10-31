@@ -14,7 +14,7 @@
     "semanticweb"
   ],
   "license": "MIT",
-  "main": "lib/index.ts",
+  "main": "./lib/index.js",
   "typings": "./lib/index",
   "bin": {
     "ostrich": "./bin/ostrich"
